@@ -96,8 +96,8 @@ flutter:
 flutter_icons:
   android: "application_innovatech"
   ios: true
-  image_path: "assets/img/innova_logo (1).png"
+  image_path: "assets/img/icon.png"
   adaptive_icon_background: "#ffffff"
-  adaptive_icon_foreground: "assets/img/innova_logo (1).png"
+  adaptive_icon_foreground: "assets/img/icon.png"
   remove_alpha_ios: true
   min_sdk_android: 21
