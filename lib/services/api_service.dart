@@ -6,7 +6,7 @@ import '../models/producto_model.dart';
 import '../services/base_url.dart';
 
 class ApiService {
-  static const String baseUrl = BaseUrlService.baseUrl; 
+  static const String baseUrl = BaseUrlService.baseUrl;
 
   
     Future<List<Categoria>> fetchCategoriasConProductos() async {

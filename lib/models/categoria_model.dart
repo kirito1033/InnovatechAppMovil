@@ -1,4 +1,4 @@
-import 'producto_model.dart'; 
+import 'producto_model.dart';
 class Categoria {
   final int id;
   final String nom;
