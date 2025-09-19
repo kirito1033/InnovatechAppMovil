@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../widget/pqrswidget.dart';
-import '../widget/appbar.dart';
-import '../widget/BottomNavBar.dart';
+import '../widgets/pqrswidget.dart';
+import '../widgets/appbar.dart';
+import '../widgets/bottom_navbar.dart';
 
 class PqrsScreen extends StatefulWidget {
   const PqrsScreen({super.key});
