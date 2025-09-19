@@ -34,6 +34,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -91,3 +92,12 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_icons:
+  android: "application_innovatech"
+  ios: true
+  image_path: "assets/img/innova_logo (1).png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/img/innova_logo (1).png"
+  remove_alpha_ios: true
+  min_sdk_android: 21
