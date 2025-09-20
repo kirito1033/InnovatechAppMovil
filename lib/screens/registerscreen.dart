@@ -1,6 +1,46 @@
 import 'package:flutter/material.dart';
 import '../widgets/registerwidget.dart';
+import '../theme/app_theme.dart';
 
+// ---- THEME CENTRALIZADO ----
+class AppTheme {
+  static const Color primary = Color(0xFF00E5FF); // Cyan
+  static const Color backgroundDark = Color.fromRGBO(2, 15, 31, 1);
+  static const Color inputDark = Color(0xFF1F2937);
+
+  static final ThemeData darkTheme = ThemeData.dark().copyWith(
+    scaffoldBackgroundColor: backgroundDark,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: backgroundDark,
+      elevation: 0,
+    ),
+    textTheme: const TextTheme(
+      bodyMedium: TextStyle(color: Colors.white),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: inputDark,
+      hintStyle: const TextStyle(color: Colors.white70),
+      labelStyle: const TextStyle(color: Colors.white70),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: primary,
+        foregroundColor: const Color.fromRGBO(11, 68, 84, 1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+      ),
+    ),
+  );
+}
+
+// ---- PANTALLA DE REGISTRO ----
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -38,19 +78,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 // Logo
                 Image.asset(
-                  "assets/logo/logo_inn.jpg",
+                  "assets/img/logo_inn.jpg",
                   height: 200,
                 ),
                 const SizedBox(height: 20),
 
                 // Título
-                const Text(
+                Text(
                   "Registro de Usuario",
-                  style: TextStyle(
-                    color: Color(0xFF00E5FF),
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: AppTheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 const SizedBox(height: 30),
 
@@ -73,16 +112,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   value: documentType,
                   decoration: const InputDecoration(
                     labelText: "Tipo de Documento",
-                    border: OutlineInputBorder(),
                   ),
+                  dropdownColor: AppTheme.inputDark,
                   items: ["DNI", "Pasaporte", "Cédula"]
                       .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                       .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      documentType = value;
-                    });
-                  },
+                  onChanged: (value) => setState(() => documentType = value),
                 ),
                 const SizedBox(height: 16),
 
@@ -98,16 +133,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   value: city,
                   decoration: const InputDecoration(
                     labelText: "Ciudad",
-                    border: OutlineInputBorder(),
                   ),
+                  dropdownColor: AppTheme.inputDark,
                   items: ["Ciudad 1", "Ciudad 2", "Ciudad 3"]
                       .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                       .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      city = value;
-                    });
-                  },
+                  onChanged: (value) => setState(() => city = value),
                 ),
                 const SizedBox(height: 16),
                 CustomTextField(hint: "Usuario", controller: usernameController),
