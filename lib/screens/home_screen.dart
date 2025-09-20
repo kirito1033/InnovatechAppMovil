@@ -27,54 +27,68 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(),
-      drawer: const CustomDrawer(),
-      body: FutureBuilder<List<Categoria>>(
-        future: categoriasFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("No hay categorías"));
+  appBar: const CustomAppBar(),
+  body: FutureBuilder<List<Categoria>>(
+    future: categoriasFuture,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (snapshot.hasError) {
+        return Center(child: Text("Error: ${snapshot.error}"));
+      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        return const Center(child: Text("No hay categorías"));
+      }
+
+      final categorias = snapshot.data!;
+
+      return ListView.builder(
+        itemCount: categorias.length + 1, // +1 para las ofertas
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return const Column(
+              children: [
+                OfertasCarousel(),
+                SizedBox(height: 20),
+              ],
+            );
           }
 
-          final categorias = snapshot.data!;
+          final categoria = categorias[index - 1];
 
-          return ListView.builder(
-            itemCount: categorias.length + 1, // +1 para las ofertas
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return const Column(
-                  children: [
-                    OfertasCarousel(),
-                    SizedBox(height: 20),
-                  ],
-                );
-              }
+          if (categoria.productos.isEmpty) {
+            return const SizedBox(); // no renderizar categorías vacías
+          }
 
-              final categoria = categorias[index - 1];
-
-              if (categoria.productos.isEmpty) {
-                return const SizedBox(); // no renderizar categorías vacías
-              }
-
-              return Column(
-                children: [
-                  ProductosCarrusel(
-                    categoriaId: categoria.id,
-                    categoriaNom: categoria.nom,
-                    productos: categoria.productos,
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              );
-            },
+          return Column(
+            children: [
+              ProductosCarrusel(
+                categoriaId: categoria.id,
+                categoriaNom: categoria.nom,
+                productos: categoria.productos,
+              ),
+              const SizedBox(height: 20),
+            ],
           );
         },
-      ),
-      bottomNavigationBar: const CustomBottomNavBar(),
-    );
+      );
+    },
+  ),
+
+  // 👇 Aquí agregamos el Drawer
+  endDrawer: CustomDrawer(
+    username: "Usuario Demo",
+    currentIndex: 0, // puedes manejar este estado si lo necesitas
+    onItemSelected: (index) {
+      print("Seleccionaste item $index");
+      Navigator.pop(context); // cerrar drawer después de seleccionar
+    },
+    onLogout: () {
+      print("Cerrar sesión");
+    },
+  ),
+
+  bottomNavigationBar: const CustomBottomNavBar(),
+);
+
   }
 }

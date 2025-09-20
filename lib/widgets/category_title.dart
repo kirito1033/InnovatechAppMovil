@@ -19,7 +19,7 @@ class CategoryTitle extends StatelessWidget {
             color: const Color.fromARGB(255, 2, 15, 31),
             width: 2,
           ),
-          borderRadius: BorderRadius.circular(30), // esquinas suaves
+          borderRadius: BorderRadius.circular(30), 
         ),
         alignment: Alignment.center,
         child: Text(

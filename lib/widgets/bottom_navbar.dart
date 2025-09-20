@@ -34,7 +34,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
           BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: ""),
           BottomNavigationBarItem(icon: Icon(Icons.local_offer), label: ""),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: ""), // 👈 Quinto ícono
+          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: ""), 
         ],
       ),
     );

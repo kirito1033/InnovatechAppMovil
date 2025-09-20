@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/registerwidget.dart';
+import '../theme/app_theme.dart';
 
 // ---- THEME CENTRALIZADO ----
 class AppTheme {
@@ -77,7 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 // Logo
                 Image.asset(
-                  "assets/logo/logo_inn.jpg",
+                  "assets/img/logo_inn.jpg",
                   height: 200,
                 ),
                 const SizedBox(height: 20),

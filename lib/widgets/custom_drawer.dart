@@ -1,89 +1,162 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 
 class CustomDrawer extends StatelessWidget {
-  const CustomDrawer({super.key});
+  final String username;
+  final Function(int) onItemSelected;
+  final VoidCallback onLogout;
+  final int currentIndex;
+
+  const CustomDrawer({
+    super.key,
+    required this.username,
+    required this.onItemSelected,
+    required this.onLogout,
+    required this.currentIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Drawer(
-      backgroundColor: const Color(0xFF020f1f),
-      child: Column(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      child: ListView(
+        padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Color(0xFF0b4454),
-            ),
-            child: UserInfoSection(),
-          ),
-          Expanded(child: MenuOptionsSection()),
+          _buildHeader(context, theme),
+          _buildMenuItems(context, theme),
         ],
       ),
     );
   }
-}
 
-/// 🔹 Sección del usuario (foto + correo)
-class UserInfoSection extends StatelessWidget {
-  const UserInfoSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
-        CircleAvatar(
-          radius: 40,
-          backgroundImage: NetworkImage(
-            "https://i.pravatar.cc/150?img=8", 
+  Widget _buildHeader(BuildContext context, ThemeData theme) {
+    return DrawerHeader(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.primary,
+            theme.colorScheme.primary.withOpacity(0.8),
+          ],
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            radius: 30,
+            backgroundColor: theme.colorScheme.onPrimary,
+            child: Icon(
+              Icons.person,
+              size: 40,
+              color: theme.colorScheme.primary,
+            ),
           ),
+          const SizedBox(height: 15),
+          Text(
+            username,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.onPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            'usuario@demo.com',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onPrimary.withOpacity(0.8),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuItems(BuildContext context, ThemeData theme) {
+    return Column(
+      children: [
+        _buildListTile(
+          context,
+          theme,
+          Icons.home,
+          'Inicio',
+          0,
+          currentIndex == 0,
         ),
-        SizedBox(height: 10),
-        Text(
-          "usuario@correo.com",
-          style: TextStyle(color: Colors.white, fontSize: 14),
-          overflow: TextOverflow.ellipsis,
+        _buildListTile(
+          context,
+          theme,
+          Icons.person,
+          'Mi Perfil',
+          1,
+          currentIndex == 1,
         ),
+        _buildListTile(
+          context,
+          theme,
+          Icons.settings,
+          'Configuración',
+          2,
+          currentIndex == 2,
+        ),
+        const Divider(),
+        _buildListTile(context, theme, Icons.notifications, 'Notificaciones', 3, false),
+        _buildListTile(context, theme, Icons.help, 'Ayuda', 4, false),
+        _buildListTile(context, theme, Icons.info, 'Acerca de', 5, false),
+        const Divider(),
+        _buildLogoutTile(context, theme),
       ],
     );
   }
-}
 
-/// 🔹 Menú de opciones
-class MenuOptionsSection extends StatelessWidget {
-  final List<Map<String, dynamic>> menuItems = const [
-    {"icon": Icons.home, "title": "Inicio"},
-    {"icon": Icons.category, "title": "Categorias"},
-    {"icon": Icons.shopping_bag, "title": "Mis Compras"},
-    {"icon": Icons.local_offer, "title": "Ofertas"},
-    {"icon": Icons.help, "title": "Ayuda / PQRS"},
-    {"icon": Icons.login, "title": "Iniciar Sesión"},
-  ];
+  Widget _buildListTile(
+    BuildContext context,
+    ThemeData theme,
+    IconData icon,
+    String title,
+    int index,
+    bool isSelected,
+  ) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: isSelected ? theme.colorScheme.primary : theme.iconTheme.color,
+      ),
+      title: Text(
+        title,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          color: isSelected ? theme.colorScheme.primary : theme.textTheme.bodyMedium?.color,
+        ),
+      ),
+      trailing: isSelected
+          ? Icon(
+              Icons.arrow_forward,
+              color: theme.colorScheme.primary,
+              size: 20,
+            )
+          : null,
+      onTap: () => onItemSelected(index),
+      selected: isSelected,
+      selectedTileColor: theme.colorScheme.primary.withOpacity(0.1),
+    );
+  }
 
-  const MenuOptionsSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.all(8),
-      itemCount: menuItems.length,
-      itemBuilder: (context, index) {
-        final item = menuItems[index];
-        return ListTile(
-          leading: Icon(item["icon"], color: const Color(0xFF04ebec)),
-          title: Text(
-            item["title"],
-            style: const TextStyle(
-              color: Color(0xFF04ebec),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          onTap: () {
-            Navigator.pop(context); 
-   
-          },
-        );
+  Widget _buildLogoutTile(BuildContext context, ThemeData theme) {
+    return ListTile(
+      leading: Icon(Icons.logout, color: theme.colorScheme.error),
+      title: Text(
+        'Cerrar Sesión',
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.error,
+        ),
+      ),
+      onTap: () {
+        Navigator.pop(context); // Cerrar el drawer
+        onLogout();
       },
-      separatorBuilder: (_, __) => const Divider(color: Colors.white24),
     );
   }
 }
