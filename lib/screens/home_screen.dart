@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../widgets/appbar.dart';
 import '../widgets/ofertas_carousel.dart';
 import '../widgets/productos_carrusel.dart';
-import '../widgets/bottom_navbar.dart';
 import '../widgets/custom_drawer.dart';
 import '../services/api_service.dart';
 import '../models/categoria_model.dart';
@@ -28,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(),
-      drawer: const CustomDrawer(),
       body: FutureBuilder<List<Categoria>>(
         future: categoriasFuture,
         builder: (context, snapshot) {
@@ -74,7 +72,19 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      bottomNavigationBar: const CustomBottomNavBar(),
+
+      // 👉 solo drawer aquí
+      endDrawer: CustomDrawer(
+        username: "Usuario Demo",
+        currentIndex: 0,
+        onItemSelected: (index) {
+          print("Seleccionaste item $index");
+          Navigator.pop(context);
+        },
+        onLogout: () {
+          print("Cerrar sesión");
+        },
+      ),
     );
   }
 }

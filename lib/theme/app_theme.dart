@@ -8,7 +8,6 @@ class AppColors {
   static const Color appBarBackground = Color.fromARGB(255, 2, 15, 31);
   static const Color appBarIcon = Colors.white;
 
-
   static const Color navBarBackground = Color.fromARGB(255, 2, 15, 31);
   static const Color navBarSelected = Colors.cyan;
   static const Color navBarUnselected = Colors.white;
@@ -16,16 +15,32 @@ class AppColors {
 
 class AppTheme {
   static ThemeData lightTheme = ThemeData(
-    primaryColor: AppColors.primary,
+    useMaterial3: false, // si usas Material 3 ponlo en true
+    colorScheme: const ColorScheme(
+      brightness: Brightness.dark,
+      primary: AppColors.primary,
+      onPrimary: Colors.black, // texto sobre el cyan
+      secondary: AppColors.primary,
+      onSecondary: Colors.black,
+      error: Colors.red,
+      onError: Colors.white,
+      background: AppColors.background,
+      onBackground: AppColors.textPrimary,
+      surface: AppColors.appBarBackground,
+      onSurface: Colors.white,
+    ),
     scaffoldBackgroundColor: AppColors.background,
+
     textTheme: const TextTheme(
       titleLarge: TextStyle(
         fontSize: 22,
         fontWeight: FontWeight.bold,
         color: AppColors.textPrimary,
       ),
-      bodyMedium: TextStyle(fontSize: 14, color: AppColors.buttonText),
+      bodyMedium: TextStyle(fontSize: 14, color: AppColors.textPrimary),
+      bodySmall: TextStyle(fontSize: 12, color: Colors.white70),
     ),
+
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
@@ -35,11 +50,18 @@ class AppTheme {
         ),
       ),
     ),
+
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.appBarBackground,
       elevation: 0,
       iconTheme: IconThemeData(color: AppColors.appBarIcon),
+      titleTextStyle: TextStyle(
+        color: AppColors.textPrimary,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
     ),
+
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: AppColors.navBarBackground,
       selectedItemColor: AppColors.navBarSelected,

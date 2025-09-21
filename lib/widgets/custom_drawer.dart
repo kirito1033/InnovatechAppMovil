@@ -1,89 +1,123 @@
 import 'package:flutter/material.dart';
+import '/theme/app_theme.dart'; // importa tu AppColors
 
 class CustomDrawer extends StatelessWidget {
-  const CustomDrawer({super.key});
+  final String username;
+  final Function(int) onItemSelected;
+  final VoidCallback onLogout;
+  final int currentIndex;
+
+  const CustomDrawer({
+    super.key,
+    required this.username,
+    required this.onItemSelected,
+    required this.onLogout,
+    required this.currentIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: const Color(0xFF020f1f),
-      child: Column(
+      backgroundColor: AppColors.appBarBackground,
+      child: ListView(
+        padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Color(0xFF0b4454),
-            ),
-            child: UserInfoSection(),
-          ),
-          Expanded(child: MenuOptionsSection()),
+          _buildHeader(),
+          _buildMenuItems(context),
         ],
       ),
     );
   }
-}
 
-/// 🔹 Sección del usuario (foto + correo)
-class UserInfoSection extends StatelessWidget {
-  const UserInfoSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
-        CircleAvatar(
-          radius: 40,
-          backgroundImage: NetworkImage(
-            "https://i.pravatar.cc/150?img=8", 
+  Widget _buildHeader() {
+    return DrawerHeader(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primary,
+            AppColors.appBarBackground,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          CircleAvatar(
+            radius: 30,
+            backgroundColor: Colors.white,
+            child: Icon(Icons.person, size: 40, color: AppColors.primary),
           ),
-        ),
-        SizedBox(height: 10),
-        Text(
-          "usuario@correo.com",
-          style: TextStyle(color: Colors.white, fontSize: 14),
-          overflow: TextOverflow.ellipsis,
-        ),
+          SizedBox(height: 15),
+          Text(
+            "Cliente Demo",
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            "usuario@demo.com",
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuItems(BuildContext context) {
+    return Column(
+      children: [
+        _buildListTile(Icons.home, 'Inicio', 0, currentIndex == 0),
+        _buildListTile(Icons.person, 'Mi Perfil', 1, currentIndex == 1),
+        _buildListTile(Icons.settings, 'Configuración', 2, currentIndex == 2),
+        const Divider(color: Colors.white30),
+        _buildListTile(Icons.notifications, 'Notificaciones', 3, false),
+        _buildListTile(Icons.help, 'Ayuda', 4, false),
+        _buildListTile(Icons.info, 'Acerca de', 5, false),
+        const Divider(color: Colors.white30),
+        _buildLogoutTile(),
       ],
     );
   }
-}
 
-/// 🔹 Menú de opciones
-class MenuOptionsSection extends StatelessWidget {
-  final List<Map<String, dynamic>> menuItems = const [
-    {"icon": Icons.home, "title": "Inicio"},
-    {"icon": Icons.category, "title": "Categorias"},
-    {"icon": Icons.shopping_bag, "title": "Mis Compras"},
-    {"icon": Icons.local_offer, "title": "Ofertas"},
-    {"icon": Icons.help, "title": "Ayuda / PQRS"},
-    {"icon": Icons.login, "title": "Iniciar Sesión"},
-  ];
+  Widget _buildListTile(
+    IconData icon,
+    String title,
+    int index,
+    bool isSelected,
+  ) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: isSelected ? AppColors.primary : Colors.white70,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: isSelected ? AppColors.primary : Colors.white,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+      onTap: () => onItemSelected(index),
+      selected: isSelected,
+      selectedTileColor: AppColors.primary.withOpacity(0.1),
+    );
+  }
 
-  const MenuOptionsSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.all(8),
-      itemCount: menuItems.length,
-      itemBuilder: (context, index) {
-        final item = menuItems[index];
-        return ListTile(
-          leading: Icon(item["icon"], color: const Color(0xFF04ebec)),
-          title: Text(
-            item["title"],
-            style: const TextStyle(
-              color: Color(0xFF04ebec),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          onTap: () {
-            Navigator.pop(context); 
-   
-          },
-        );
-      },
-      separatorBuilder: (_, __) => const Divider(color: Colors.white24),
+  Widget _buildLogoutTile() {
+    return ListTile(
+      leading: const Icon(Icons.logout, color: Colors.red),
+      title: const Text(
+        'Cerrar Sesión',
+        style: TextStyle(color: Colors.red),
+      ),
+      onTap: onLogout,
     );
   }
 }

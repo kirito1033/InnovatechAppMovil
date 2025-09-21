@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'theme/app_theme.dart';
-import 'screens/home_screen.dart';
+import 'widgets/bottom_navbar.dart';
 
 void main() {
   runApp(const InovaTechApp());
@@ -15,7 +15,7 @@ class InovaTechApp extends StatelessWidget {
       title: "InovaTech",
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const HomeScreen(),
+      home: const CustomBottomNavBar(), // 👈 ahora inicia aquí
     );
   }
 }
