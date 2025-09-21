@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(),
-<<<<<<< HEAD
+
       body: Column(
         children: [
           if (username != null)
@@ -59,9 +59,14 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 "Bienvenido $username 🎉",
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
+
+          // 🔹 Contenido dinámico de categorías
           Expanded(
             child: FutureBuilder<List<Categoria>>(
               future: categoriasFuture,
@@ -73,18 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text("No hay categorías"));
                 }
-=======
-      body: FutureBuilder<List<Categoria>>(
-        future: categoriasFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text("No hay categorías"));
-          }
->>>>>>> Valery
 
                 final categorias = snapshot.data!;
 
@@ -101,7 +94,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
 
                     final categoria = categorias[index - 1];
-
                     if (categoria.productos.isEmpty) return const SizedBox();
 
                     return Column(
@@ -121,24 +113,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+
+      // 🔹 Drawer único y limpio
       endDrawer: CustomDrawer(
         username: username ?? "Usuario",
         currentIndex: 0,
         onItemSelected: (index) => Navigator.pop(context),
-        onLogout: _handleLogout, // 🔹 Pasamos la función correcta
-      ),
-
-      // 👉 solo drawer aquí
-      endDrawer: CustomDrawer(
-        username: "Usuario Demo",
-        currentIndex: 0,
-        onItemSelected: (index) {
-          print("Seleccionaste item $index");
-          Navigator.pop(context);
-        },
-        onLogout: () {
-          print("Cerrar sesión");
-        },
+        onLogout: _handleLogout,
       ),
     );
   }
