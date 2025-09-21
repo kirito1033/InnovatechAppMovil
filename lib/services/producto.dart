@@ -51,4 +51,40 @@ class ApiService {
   }
 }
 
+Future<List<Producto>> buscarProductos(
+  String query, {
+  String? color,
+  String? marca,
+  String? categoria,
+  double? precioMin,
+  double? precioMax,
+  String? ram,
+  String? almacenamiento,
+  String? sistemaOperativo,
+  String? resolucion,
+}) async {
+  final uri = Uri.parse("$baseUrl/productos/buscar").replace(
+  queryParameters: {
+    "query": query,
+    if (color != null) "color": color,
+    if (marca != null) "marca": marca,
+    if (categoria != null) "categoria": categoria,
+    if (precioMin != null) "precioMin": precioMin.toString(),
+    if (precioMax != null) "precioMax": precioMax.toString(),
+    if (ram != null) "ram": ram,
+    if (almacenamiento != null) "almacenamiento": almacenamiento,
+    if (sistemaOperativo != null) "sistema_operativo": sistemaOperativo,
+    if (resolucion != null) "resolucion": resolucion,
+  },
+);
+  final response = await http.get(uri);
+
+  if (response.statusCode == 200) {
+    List data = json.decode(response.body);
+    return data.map((json) => Producto.fromJson(json)).toList();
+  } else {
+    throw Exception("Error al buscar productos");
+  }
+}
+
 }
