@@ -1,4 +1,3 @@
-// home_screen.dart
 import 'package:flutter/material.dart';
 import '../widgets/appbar.dart';
 import '../widgets/ofertas_carousel.dart';
@@ -59,9 +58,14 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 "Bienvenido $username 🎉",
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
+
+          // 🔹 Contenido dinámico de categorías
           Expanded(
             child: FutureBuilder<List<Categoria>>(
               future: categoriasFuture,
@@ -89,7 +93,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
 
                     final categoria = categorias[index - 1];
-
                     if (categoria.productos.isEmpty) return const SizedBox();
 
                     return Column(
@@ -109,12 +112,16 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+
+      // 🔹 Drawer único y limpio
       endDrawer: CustomDrawer(
         username: username ?? "Usuario",
         currentIndex: 0,
         onItemSelected: (index) => Navigator.pop(context),
-        onLogout: _handleLogout, // 🔹 Pasamos la función correcta
+        onLogout: _handleLogout,
       ),
+
+      // 🔹 Mantengo el BottomNavBar de HEAD
       bottomNavigationBar: const CustomBottomNavBar(),
     );
   }

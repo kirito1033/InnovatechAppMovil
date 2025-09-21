@@ -4,7 +4,7 @@ import 'screens/home_screen.dart';
 import 'screens/registerscreen.dart';
 import 'services/auth_service.dart';
 import 'theme/app_theme.dart';
-
+import 'widgets/bottom_navbar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,8 +22,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'InovaTech',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
-      home: loggedIn ? const HomeScreen() : const LoginScreen(), 
+      theme: AppTheme.lightTheme, // 👈 cambia a AppTheme.darkTheme si lo prefieres
+      home: loggedIn ? const CustomBottomNavBar() : const LoginScreen(),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
