@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
+import '/theme/app_theme.dart'; // importa tu AppColors
 
 class CustomDrawer extends StatelessWidget {
   final String username;
@@ -17,56 +17,52 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Drawer(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: AppColors.appBarBackground,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          _buildHeader(context, theme),
-          _buildMenuItems(context, theme),
+          _buildHeader(),
+          _buildMenuItems(context),
         ],
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context, ThemeData theme) {
+  Widget _buildHeader() {
     return DrawerHeader(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
+          colors: [
+            AppColors.primary,
+            AppColors.appBarBackground,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primary,
-            theme.colorScheme.primary.withOpacity(0.8),
-          ],
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: const [
           CircleAvatar(
             radius: 30,
-            backgroundColor: theme.colorScheme.onPrimary,
-            child: Icon(
-              Icons.person,
-              size: 40,
-              color: theme.colorScheme.primary,
-            ),
+            backgroundColor: Colors.white,
+            child: Icon(Icons.person, size: 40, color: AppColors.primary),
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: 15),
           Text(
-            username,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onPrimary,
+            "Cliente Demo",
+            style: TextStyle(
+              color: AppColors.textPrimary,
               fontWeight: FontWeight.bold,
+              fontSize: 16,
             ),
           ),
           Text(
-            'usuario@demo.com',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onPrimary.withOpacity(0.8),
+            "usuario@demo.com",
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
             ),
           ),
         ],
@@ -74,46 +70,23 @@ class CustomDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItems(BuildContext context, ThemeData theme) {
+  Widget _buildMenuItems(BuildContext context) {
     return Column(
       children: [
-        _buildListTile(
-          context,
-          theme,
-          Icons.home,
-          'Inicio',
-          0,
-          currentIndex == 0,
-        ),
-        _buildListTile(
-          context,
-          theme,
-          Icons.person,
-          'Mi Perfil',
-          1,
-          currentIndex == 1,
-        ),
-        _buildListTile(
-          context,
-          theme,
-          Icons.settings,
-          'Configuración',
-          2,
-          currentIndex == 2,
-        ),
-        const Divider(),
-        _buildListTile(context, theme, Icons.notifications, 'Notificaciones', 3, false),
-        _buildListTile(context, theme, Icons.help, 'Ayuda', 4, false),
-        _buildListTile(context, theme, Icons.info, 'Acerca de', 5, false),
-        const Divider(),
-        _buildLogoutTile(context, theme),
+        _buildListTile(Icons.home, 'Inicio', 0, currentIndex == 0),
+        _buildListTile(Icons.person, 'Mi Perfil', 1, currentIndex == 1),
+        _buildListTile(Icons.settings, 'Configuración', 2, currentIndex == 2),
+        const Divider(color: Colors.white30),
+        _buildListTile(Icons.notifications, 'Notificaciones', 3, false),
+        _buildListTile(Icons.help, 'Ayuda', 4, false),
+        _buildListTile(Icons.info, 'Acerca de', 5, false),
+        const Divider(color: Colors.white30),
+        _buildLogoutTile(),
       ],
     );
   }
 
   Widget _buildListTile(
-    BuildContext context,
-    ThemeData theme,
     IconData icon,
     String title,
     int index,
@@ -122,41 +95,29 @@ class CustomDrawer extends StatelessWidget {
     return ListTile(
       leading: Icon(
         icon,
-        color: isSelected ? theme.colorScheme.primary : theme.iconTheme.color,
+        color: isSelected ? AppColors.primary : Colors.white70,
       ),
       title: Text(
         title,
-        style: theme.textTheme.bodyMedium?.copyWith(
+        style: TextStyle(
+          color: isSelected ? AppColors.primary : Colors.white,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          color: isSelected ? theme.colorScheme.primary : theme.textTheme.bodyMedium?.color,
         ),
       ),
-      trailing: isSelected
-          ? Icon(
-              Icons.arrow_forward,
-              color: theme.colorScheme.primary,
-              size: 20,
-            )
-          : null,
       onTap: () => onItemSelected(index),
       selected: isSelected,
-      selectedTileColor: theme.colorScheme.primary.withOpacity(0.1),
+      selectedTileColor: AppColors.primary.withOpacity(0.1),
     );
   }
 
-  Widget _buildLogoutTile(BuildContext context, ThemeData theme) {
+  Widget _buildLogoutTile() {
     return ListTile(
-      leading: Icon(Icons.logout, color: theme.colorScheme.error),
-      title: Text(
+      leading: const Icon(Icons.logout, color: Colors.red),
+      title: const Text(
         'Cerrar Sesión',
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: theme.colorScheme.error,
-        ),
+        style: TextStyle(color: Colors.red),
       ),
-      onTap: () {
-        Navigator.pop(context); // Cerrar el drawer
-        onLogout();
-      },
+      onTap: onLogout,
     );
   }
 }
