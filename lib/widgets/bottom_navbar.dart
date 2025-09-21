@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// ignore: unused_import
 import '/widgets/custom_drawer.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
@@ -13,7 +14,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
 
   void _onItemTapped(BuildContext context, int index) {
     if (index == 4) {
-      // 🔹 Abrir el Drawer
+
       Scaffold.of(context).openEndDrawer();
     } else {
       setState(() {

@@ -3,7 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import '../widgets/appbar.dart';
 import '../widgets/ofertas_carousel.dart';
 import '../widgets/bottom_navbar.dart';
-import '../services/api_service.dart';
+import '../services/producto.dart';
 import '../models/categoria_model.dart';
 import '../models/producto_model.dart';
 import '../screens/product_detail_screen.dart';

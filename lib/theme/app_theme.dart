@@ -15,38 +15,61 @@ class AppColors {
 }
 
 class AppTheme {
-  static ThemeData lightTheme = ThemeData(
-    primaryColor: AppColors.primary,
-    scaffoldBackgroundColor: AppColors.background,
+  // Colores reutilizables
+  static const Color primary = Color(0xFF00E5FF);
+  static const Color backgroundDark = Color.fromARGB(255, 11, 68, 84);
+  static const Color inputDark = Color(0xFF1F2937);
+  static const Color textLight = Colors.white;
+  static const Color textMuted = Color(0xB3FFFFFF); 
+  static const Color AppbarBackgroundColor = Color(0xFF020F1F);
+
+
+  // Tema oscuro
+  static final ThemeData darkTheme = ThemeData.dark().copyWith(
+    scaffoldBackgroundColor: backgroundDark,
+    primaryColor: primary,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppbarBackgroundColor,
+      elevation: 0,
+    ),
     textTheme: const TextTheme(
-      titleLarge: TextStyle(
-        fontSize: 22,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimary,
+      bodyMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+      headlineSmall: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+    ),
+    
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: inputDark,
+      hintStyle: const TextStyle(color: textMuted),
+      labelStyle: const TextStyle(color: textMuted),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
       ),
-      bodyMedium: TextStyle(fontSize: 14, color: AppColors.buttonText),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.buttonText,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+        backgroundColor: primary,
+        foregroundColor: const Color.fromRGBO(11, 68, 84, 1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       ),
     ),
-    appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.appBarBackground,
-      elevation: 0,
-      iconTheme: IconThemeData(color: AppColors.appBarIcon),
-    ),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: AppColors.navBarBackground,
-      selectedItemColor: AppColors.navBarSelected,
-      unselectedItemColor: AppColors.navBarUnselected,
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
-      type: BottomNavigationBarType.fixed,
+  );
+
+
+  static final ThemeData lightTheme = ThemeData.light().copyWith(
+    primaryColor: primary,
+    scaffoldBackgroundColor: Colors.white,
+    appBarTheme: const AppBarTheme(backgroundColor: primary),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.grey[200],
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
     ),
   );
 }

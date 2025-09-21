@@ -228,7 +228,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           );
                         },
                         icon:
-                            const Icon(Icons.payment, color: Colors.white), // 🔹 Icono agregado
+                            const Icon(Icons.payment, color: Colors.white),
                         label: const Text(
                           "Comprar ahora",
                           style: TextStyle(
