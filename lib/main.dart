@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/registerscreen.dart';
 import 'services/auth_service.dart';
 import 'theme/app_theme.dart';
+=======
+import 'theme/app_theme.dart';
+import 'widgets/bottom_navbar.dart';
+>>>>>>> Valery
 
 
 void main() async {
@@ -22,6 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'InovaTech',
       debugShowCheckedModeBanner: false,
+<<<<<<< HEAD
       theme: AppTheme.darkTheme,
       home: loggedIn ? const HomeScreen() : const LoginScreen(), 
       routes: {
@@ -29,6 +35,10 @@ class MyApp extends StatelessWidget {
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => const HomeScreen(),
       },
+=======
+      theme: AppTheme.lightTheme,
+      home: const CustomBottomNavBar(), // 👈 ahora inicia aquí
+>>>>>>> Valery
     );
   }
 }

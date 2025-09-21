@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../widgets/appbar.dart';
 import '../widgets/ofertas_carousel.dart';
 import '../widgets/productos_carrusel.dart';
-import '../widgets/bottom_navbar.dart';
 import '../widgets/custom_drawer.dart';
 import '../services/producto.dart';
 import '../models/categoria_model.dart';
@@ -52,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(),
+<<<<<<< HEAD
       body: Column(
         children: [
           if (username != null)
@@ -73,6 +73,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text("No hay categorías"));
                 }
+=======
+      body: FutureBuilder<List<Categoria>>(
+        future: categoriasFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("No hay categorías"));
+          }
+>>>>>>> Valery
 
                 final categorias = snapshot.data!;
 
@@ -115,7 +127,19 @@ class _HomeScreenState extends State<HomeScreen> {
         onItemSelected: (index) => Navigator.pop(context),
         onLogout: _handleLogout, // 🔹 Pasamos la función correcta
       ),
-      bottomNavigationBar: const CustomBottomNavBar(),
+
+      // 👉 solo drawer aquí
+      endDrawer: CustomDrawer(
+        username: "Usuario Demo",
+        currentIndex: 0,
+        onItemSelected: (index) {
+          print("Seleccionaste item $index");
+          Navigator.pop(context);
+        },
+        onLogout: () {
+          print("Cerrar sesión");
+        },
+      ),
     );
   }
 }
