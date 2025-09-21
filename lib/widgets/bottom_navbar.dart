@@ -31,11 +31,11 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
         onTap: (index) => _onItemTapped(navContext, index),
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.local_offer), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: ""), 
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: "Carrito"),
+          BottomNavigationBarItem(icon: Icon(Icons.local_offer), label: "Ofertas"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Perfil"),
+          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "Más"),
         ],
       ),
     );
