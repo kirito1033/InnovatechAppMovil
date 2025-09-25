@@ -330,6 +330,7 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
                                         ),
                                         const SizedBox(height: 6),
                                         Text(
+                                          // ignore: dead_code
                                           producto.descripcion ?? "Sin descripción",
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,

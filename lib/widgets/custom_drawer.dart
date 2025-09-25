@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+// ignore: unused_import
 import '../theme/app_theme.dart';
 
 class CustomDrawer extends StatelessWidget {

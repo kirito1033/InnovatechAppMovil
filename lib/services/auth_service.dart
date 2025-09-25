@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/base_url.dart';
 
 class AuthService {
-  static const String baseUrl = BaseUrlService.baseUrl; 
+  static const String baseUrl = BaseUrlService.baseUrl;
 
   // 🔹 Login
   static Future<Map<String, dynamic>> login(String usuario, String password) async {
@@ -19,38 +19,73 @@ class AuthService {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        // 🔹 Guardamos el token para mantener la sesión
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString("token", data["token"]); 
-        await prefs.setString("usuario", jsonEncode(data["usuario"])); 
+        await prefs.setString("token", data["token"]);
+
+        // 🚨 Guardamos TODO el objeto (no solo el user)
+        await prefs.setString("usuarioData", jsonEncode(data));
+
+        // Guardamos el userId aparte para fácil acceso
+        if (data["user"] != null && data["user"]["id"] != null) {
+          await prefs.setInt("userId", data["user"]["id"]);
+          print("✅ userId guardado: ${data["user"]["id"]}");
+        } else {
+          print("⚠️ No se encontró userId en la respuesta del backend");
+        }
+
+        print("✅ Usuario guardado en SharedPreferences: ${jsonEncode(data)}");
 
         return {"success": true, "data": data};
       } else {
-        return {"success": false, "message": data["error"] ?? "Credenciales inválidas"};
+        return {
+          "success": false,
+          "message": data["error"] ?? "Credenciales inválidas"
+        };
       }
     } catch (e) {
       return {"success": false, "message": "Error de conexión: $e"};
     }
   }
 
-  // 🔹 Logout (borrar token y datos guardados)
+  // 🔹 Logout
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove("token");
-    await prefs.remove("usuario");
+    await prefs.clear();
+    print("🚪 Sesión cerrada y datos eliminados de SharedPreferences");
   }
 
-  // 🔹 Verificar si hay sesión iniciada
+  // 🔹 Verificar sesión
   static Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.containsKey("token");
   }
-  
-  static Future<String?> getUsername() async {
-  final prefs = await SharedPreferences.getInstance();
-  if (!prefs.containsKey("usuario")) return null;
-  final usuarioData = jsonDecode(prefs.getString("usuario")!);
-  return usuarioData["nombre"];
-}
-}
 
+  // 🔹 Obtener nombre de usuario
+  static Future<String?> getUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey("usuarioData")) return null;
+
+    final data = jsonDecode(prefs.getString("usuarioData")!);
+    return data["user"]["nombre"]; // ✅ ahora siempre desde user
+  }
+
+  // 🔹 Obtener ID de usuario
+  static Future<int?> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (prefs.containsKey("userId")) {
+      final id = prefs.getInt("userId");
+      print("✅ ID de usuario obtenido: $id");
+      return id;
+    }
+
+    if (prefs.containsKey("usuarioData")) {
+      final data = jsonDecode(prefs.getString("usuarioData")!);
+      print("📦 Datos completos del usuario desde SharedPreferences: $data");
+      return data["user"]["id"];
+    }
+
+    print("❌ No hay userId en SharedPreferences");
+    return null;
+  }
+}

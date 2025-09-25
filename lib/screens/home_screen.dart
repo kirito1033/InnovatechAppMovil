@@ -57,10 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (username != null)
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text(
-                "Bienvenido $username 🎉",
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+
             ),
           Expanded(
             child: FutureBuilder<List<Categoria>>(
