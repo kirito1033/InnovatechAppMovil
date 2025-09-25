@@ -110,12 +110,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       endDrawer: CustomDrawer(
-        username: username ?? "Usuario",
+        username: "Cliente Demo",
         currentIndex: 0,
         onItemSelected: (index) => Navigator.pop(context),
         onLogout: _handleLogout, // 🔹 Pasamos la función correcta
       ),
-      bottomNavigationBar: const CustomBottomNavBar(),
     );
   }
 }

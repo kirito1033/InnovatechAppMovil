@@ -8,68 +8,79 @@ class AppColors {
   static const Color appBarBackground = Color.fromARGB(255, 2, 15, 31);
   static const Color appBarIcon = Colors.white;
 
-
   static const Color navBarBackground = Color.fromARGB(255, 2, 15, 31);
   static const Color navBarSelected = Colors.cyan;
   static const Color navBarUnselected = Colors.white;
 }
 
 class AppTheme {
-  // Colores reutilizables
-  static const Color primary = Color(0xFF00E5FF);
-  static const Color backgroundDark = Color.fromARGB(255, 11, 68, 84);
-  static const Color inputDark = Color(0xFF1F2937);
-  static const Color textLight = Colors.white;
-  static const Color textMuted = Color(0xB3FFFFFF); 
-  static const Color AppbarBackgroundColor = Color(0xFF020F1F);
-
-
-  // Tema oscuro
-  static final ThemeData darkTheme = ThemeData.dark().copyWith(
-    scaffoldBackgroundColor: backgroundDark,
-    primaryColor: primary,
-    appBarTheme: const AppBarTheme(
-      backgroundColor: AppbarBackgroundColor,
-      elevation: 0,
+  static ThemeData darkTheme = ThemeData(
+    useMaterial3: false, // cambia a true si quieres Material 3
+    colorScheme: const ColorScheme(
+      brightness: Brightness.dark,
+      primary: AppColors.primary,
+      onPrimary: Colors.black, // texto sobre el cyan
+      secondary: AppColors.primary,
+      onSecondary: Colors.black,
+      error: Colors.red,
+      onError: Colors.white,
+      background: AppColors.background,
+      onBackground: AppColors.textPrimary,
+      surface: AppColors.appBarBackground,
+      onSurface: Colors.white,
     ),
+    scaffoldBackgroundColor: AppColors.background,
+
     textTheme: const TextTheme(
-      bodyMedium: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-      headlineSmall: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+      titleLarge: TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        color: AppColors.textPrimary,
+      ),
+      bodyMedium: TextStyle(fontSize: 14, color: AppColors.textPrimary),
+      bodySmall: TextStyle(fontSize: 12, color: Colors.white70),
     ),
-    
+
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: inputDark,
-      hintStyle: const TextStyle(color: textMuted),
-      labelStyle: const TextStyle(color: textMuted),
+      fillColor: Color(0xFF1F2937), // gris oscuro para inputs
+      hintStyle: const TextStyle(color: Colors.white70),
+      labelStyle: const TextStyle(color: Colors.white70),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
       ),
     ),
+
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: primary,
-        foregroundColor: const Color.fromRGBO(11, 68, 84, 1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.buttonText,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       ),
     ),
-  );
 
-
-  static final ThemeData lightTheme = ThemeData.light().copyWith(
-    primaryColor: primary,
-    scaffoldBackgroundColor: Colors.white,
-    appBarTheme: const AppBarTheme(backgroundColor: primary),
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: Colors.grey[200],
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.appBarBackground,
+      elevation: 0,
+      iconTheme: IconThemeData(color: AppColors.appBarIcon),
+      titleTextStyle: TextStyle(
+        color: AppColors.textPrimary,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
       ),
+    ),
+
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: AppColors.navBarBackground,
+      selectedItemColor: AppColors.navBarSelected,
+      unselectedItemColor: AppColors.navBarUnselected,
+      showSelectedLabels: false,
+      showUnselectedLabels: false,
+      type: BottomNavigationBarType.fixed,
     ),
   );
 }
