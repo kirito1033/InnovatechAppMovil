@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/auth_service.dart';
+import '../screens/reset_password_screen.dart';
 // ignore: unused_import
 import 'home_screen.dart';
 
@@ -222,7 +223,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 10),
 
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ResetPasswordScreen()),
+                          );
+                        },
                         child: const Text(
                           "¿Olvidaste tu contraseña?",
                           style: TextStyle(color: Colors.white70),
