@@ -74,12 +74,12 @@ class CustomDrawer extends StatelessWidget {
     return Column(
       children: [
         _buildListTile(Icons.home, 'Inicio', 0, currentIndex == 0),
-        _buildListTile(Icons.person, 'Mi Perfil', 1, currentIndex == 1),
+        _buildListTile(Icons.person, 'Mi Perfil', 3, currentIndex == 3),
         _buildListTile(Icons.settings, 'Configuración', 2, currentIndex == 2),
         const Divider(color: Colors.white30),
-        _buildListTile(Icons.notifications, 'Notificaciones', 3, false),
-        _buildListTile(Icons.help, 'Ayuda', 4, false),
-        _buildListTile(Icons.info, 'Acerca de', 5, false),
+        _buildListTile(Icons.notifications, 'Notificaciones', 4, false),
+        _buildListTile(Icons.help, 'Ayuda', 5, false),
+        _buildListTile(Icons.info, 'Acerca de', 6, false),
         const Divider(color: Colors.white30),
         _buildLogoutTile(context),
       ],
