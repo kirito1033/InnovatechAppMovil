@@ -61,13 +61,16 @@ class AuthService {
   }
 
   // 🔹 Obtener nombre de usuario
-  static Future<String?> getUsername() async {
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey("usuarioData")) return null;
+  static Future<Map<String, String?>> getUserData() async {
+  final prefs = await SharedPreferences.getInstance();
+  if (!prefs.containsKey("usuarioData")) return {"nombre": null, "correo": null};
 
-    final data = jsonDecode(prefs.getString("usuarioData")!);
-    return data["user"]["nombre"]; // ✅ ahora siempre desde user
-  }
+  final data = jsonDecode(prefs.getString("usuarioData")!);
+  return {
+    "nombre": data["user"]["nombre"],
+    "correo": data["user"]["correo"], 
+  };
+}
 
   // 🔹 Obtener ID de usuario
   static Future<int?> getUserId() async {

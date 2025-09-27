@@ -7,7 +7,12 @@ import 'product_detail_screen.dart';
 
 class BusquedaScreen extends StatefulWidget {
   final String query;
-  const BusquedaScreen({super.key, required this.query});
+  final String? categoria;
+  const BusquedaScreen({
+    super.key,
+    required this.query,
+    this.categoria,
+  });
 
   @override
   State<BusquedaScreen> createState() => _BusquedaScreenState();
@@ -37,28 +42,28 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
   }
 
   void _buscarProductos() {
-    setState(() {
-      productosFuture = apiService.buscarProductos(
-        widget.query,
-        color: selectedColor,
-        marca: selectedMarca,
-        categoria: selectedCategoria,
-        ram: selectedRam,
-        almacenamiento: selectedAlmacenamiento,
-        sistemaOperativo: selectedSO,
-        resolucion: selectedResolucion,
-        precioMin: precioMin,
-        precioMax: precioMax,
-      );
-    });
-  }
+  setState(() {
+    productosFuture = apiService.buscarProductos(
+      widget.query,
+      categoria: widget.categoria ?? selectedCategoria ?? widget.query,
+      color: selectedColor,
+      marca: selectedMarca,
+      ram: selectedRam,
+      almacenamiento: selectedAlmacenamiento,
+      sistemaOperativo: selectedSO,
+      resolucion: selectedResolucion,
+      precioMin: precioMin,
+      precioMax: precioMax,
+    );
+  });
+}
 
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,
       labelStyle: const TextStyle(color: Colors.white70),
       filled: true,
-      fillColor: appBarBackground,
+      fillColor: Color.fromARGB(255, 11, 68, 84),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Colors.white24),
@@ -80,7 +85,7 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
     return Scaffold(
       appBar: const CustomAppBar(),
       bottomNavigationBar: const CustomBottomNavBar(),
-      backgroundColor: appBarBackground,
+      backgroundColor: Color.fromARGB(255, 11, 68, 84),
       body: FutureBuilder<List<Producto>>(
         future: productosFuture,
         builder: (context, snapshot) {

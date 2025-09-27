@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
-// ignore: unused_import
-import '../theme/app_theme.dart';
-
 class CustomDrawer extends StatelessWidget {
   final String username;
+  final String correo;
   final Function(int) onItemSelected;
   final VoidCallback onLogout;
   final int currentIndex;
@@ -12,6 +10,7 @@ class CustomDrawer extends StatelessWidget {
   const CustomDrawer({
     super.key,
     required this.username,
+    required this.correo,
     required this.onItemSelected,
     required this.onLogout,
     required this.currentIndex,
@@ -66,7 +65,7 @@ class CustomDrawer extends StatelessWidget {
             ),
           ),
           Text(
-            'usuario@demo.com',
+            correo,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onPrimary.withOpacity(0.8),
             ),
@@ -79,34 +78,27 @@ class CustomDrawer extends StatelessWidget {
   Widget _buildMenuItems(BuildContext context, ThemeData theme) {
     return Column(
       children: [
-        _buildListTile(
-          context,
-          theme,
-          Icons.home,
-          'Inicio',
-          0,
-          currentIndex == 0,
-        ),
-        _buildListTile(
-          context,
-          theme,
-          Icons.person,
-          'Mi Perfil',
-          1,
-          currentIndex == 1,
-        ),
-        _buildListTile(
-          context,
-          theme,
-          Icons.settings,
-          'Configuración',
-          2,
-          currentIndex == 2,
-        ),
+        _buildListTile(context, theme, Icons.home, 'Inicio', 0),
+        _buildListTile(context, theme, Icons.person, 'Mi Perfil', 1),
+        _buildListTile(context, theme, Icons.settings, 'Configuración', 2),
         const Divider(),
-        _buildListTile(context, theme, Icons.notifications, 'Notificaciones', 3, false),
-        _buildListTile(context, theme, Icons.help, 'Ayuda', 4, false),
-        _buildListTile(context, theme, Icons.info, 'Acerca de', 5, false),
+        _buildListTile(context, theme, Icons.notifications, 'Notificaciones', 3),
+
+        // ✅ Ayuda ya no afecta la selección
+        ListTile(
+          leading: Icon(Icons.help, color: theme.iconTheme.color),
+          title: Text(
+            'Ayuda',
+            style: theme.textTheme.bodyMedium,
+          ),
+          onTap: () {
+            Navigator.pop(context);
+            // ✅ No cambiamos el índice del navbar
+            Navigator.pushNamed(context, '/pqrs');
+          },
+        ),
+
+        _buildListTile(context, theme, Icons.info, 'Acerca de', 5),
         const Divider(),
         _buildLogoutTile(context, theme),
       ],
@@ -119,8 +111,9 @@ class CustomDrawer extends StatelessWidget {
     IconData icon,
     String title,
     int index,
-    bool isSelected,
   ) {
+    final bool isSelected = currentIndex == index;
+
     return ListTile(
       leading: Icon(
         icon,
@@ -130,17 +123,23 @@ class CustomDrawer extends StatelessWidget {
         title,
         style: theme.textTheme.bodyMedium?.copyWith(
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          color: isSelected ? theme.colorScheme.primary : theme.textTheme.bodyMedium?.color,
+          color: isSelected
+              ? theme.colorScheme.primary
+              : theme.textTheme.bodyMedium?.color,
         ),
       ),
       trailing: isSelected
-          ? Icon(
-              Icons.arrow_forward,
-              color: theme.colorScheme.primary,
-              size: 20,
-            )
+          ? Icon(Icons.arrow_forward, color: theme.colorScheme.primary, size: 20)
           : null,
-      onTap: () => onItemSelected(index),
+      onTap: () {
+        // ✅ Cambiamos el índice ANTES de cerrar el Drawer
+        onItemSelected(index);
+
+        // ✅ Esperamos un instante y luego cerramos el Drawer
+        Future.delayed(const Duration(milliseconds: 150), () {
+          Navigator.pop(context);
+        });
+      },
       selected: isSelected,
       selectedTileColor: theme.colorScheme.primary.withOpacity(0.1),
     );
@@ -156,7 +155,7 @@ class CustomDrawer extends StatelessWidget {
         ),
       ),
       onTap: () {
-        Navigator.pop(context); // Cerrar el drawer
+        Navigator.pop(context);
         onLogout();
       },
     );

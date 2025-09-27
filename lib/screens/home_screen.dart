@@ -21,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final ApiService apiService = ApiService();
   late Future<List<Categoria>> categoriasFuture;
   String? username;
+  String? correo;
 
   @override
   void initState() {
@@ -30,13 +31,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadUsername() async {
-    final name = await AuthService.getUsername();
-    if (mounted) {
-      setState(() {
-        username = name ?? "Usuario";
-      });
-    }
+  final userData = await AuthService.getUserData();
+
+  if (mounted) {
+    setState(() {
+      username = userData["nombre"] ?? "Usuario";
+      correo = userData["correo"] ?? "Correo";
+    });
   }
+}
 
   Future<void> _handleLogout() async {
     await AuthService.logout(); // 🔹 Borra token y datos
@@ -108,9 +111,10 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       endDrawer: CustomDrawer(
         username: username ?? "Usuario",
+        correo: correo ?? "correo@ejemplo.com",
         currentIndex: 0,
         onItemSelected: (index) => Navigator.pop(context),
-        onLogout: _handleLogout, // 🔹 Pasamos la función correcta
+        onLogout: _handleLogout,
       ),
       bottomNavigationBar: const CustomBottomNavBar(),
     );
