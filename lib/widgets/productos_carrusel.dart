@@ -16,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final ApiService apiService = ApiService();
   late Future<List<Categoria>> categoriasFuture;
 
@@ -28,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: const CustomAppBar(),
       body: FutureBuilder<List<Categoria>>(
         future: categoriasFuture,
@@ -77,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      bottomNavigationBar: const CustomBottomNavBar(),
+      bottomNavigationBar: CustomBottomNavBar(scaffoldKey: _scaffoldKey),
     );
   }
 }

@@ -1,73 +1,104 @@
 import 'package:flutter/material.dart';
+import '../services/user_helper.dart';
+import '/theme/app_theme.dart'; // tus colores
 
-class CustomDrawer extends StatelessWidget {
-  final String username;
-  final String correo;
-  final Function(int) onItemSelected;
-  final VoidCallback onLogout;
+class CustomDrawer extends StatefulWidget {
   final int currentIndex;
+  const CustomDrawer({super.key, required this.currentIndex});
 
-  const CustomDrawer({
-    super.key,
-    required this.username,
-    required this.correo,
-    required this.onItemSelected,
-    required this.onLogout,
-    required this.currentIndex,
-  });
+  @override
+  State<CustomDrawer> createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends State<CustomDrawer> {
+  String username = "Usuario";
+  String correo = "correo@ejemplo.com";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final data = await UserHelper.getUserData();
+    if (mounted) {
+      setState(() {
+        username = data["username"]!;
+        correo = data["correo"]!;
+      });
+    }
+  }
+
+  void _handleNavigation(int index) {
+    Navigator.pop(context); // cerrar drawer
+    switch (index) {
+      case 0:
+        Navigator.pushReplacementNamed(context, '/home');
+        break;
+      case 1:
+        Navigator.pushReplacementNamed(context, '/profile');
+        break;
+      case 2:
+        Navigator.pushReplacementNamed(context, '/settings');
+        break;
+      case 3:
+        Navigator.pushReplacementNamed(context, '/notifications');
+        break;
+      case 5:
+        Navigator.pushReplacementNamed(context, '/about');
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Drawer(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: AppColors.appBarBackground,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          _buildHeader(context, theme),
-          _buildMenuItems(context, theme),
+          _buildHeader(),
+          _buildMenuItems(),
         ],
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context, ThemeData theme) {
+  Widget _buildHeader() {
     return DrawerHeader(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
+          colors: [
+            AppColors.primary,
+            AppColors.appBarBackground,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primary,
-            theme.colorScheme.primary.withOpacity(0.8),
-          ],
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
+          const CircleAvatar(
             radius: 30,
-            backgroundColor: theme.colorScheme.onPrimary,
-            child: Icon(
-              Icons.person,
-              size: 40,
-              color: theme.colorScheme.primary,
-            ),
+            backgroundColor: Colors.white,
+            child: Icon(Icons.person, size: 40, color: AppColors.primary),
           ),
           const SizedBox(height: 15),
           Text(
             username,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onPrimary,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
               fontWeight: FontWeight.bold,
+              fontSize: 16,
             ),
           ),
           Text(
             correo,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onPrimary.withOpacity(0.8),
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
             ),
           ),
         ],
@@ -75,89 +106,59 @@ class CustomDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItems(BuildContext context, ThemeData theme) {
+  Widget _buildMenuItems() {
     return Column(
       children: [
-        _buildListTile(context, theme, Icons.home, 'Inicio', 0),
-        _buildListTile(context, theme, Icons.person, 'Mi Perfil', 1),
-        _buildListTile(context, theme, Icons.settings, 'Configuración', 2),
-        const Divider(),
-        _buildListTile(context, theme, Icons.notifications, 'Notificaciones', 3),
-
-        // ✅ Ayuda ya no afecta la selección
+        _buildListTile(Icons.home, 'Inicio', 0),
+        _buildListTile(Icons.person, 'Mi Perfil', 1),
+        _buildListTile(Icons.settings, 'Configuración', 2),
+        const Divider(color: Colors.white30),
+        _buildListTile(Icons.notifications, 'Notificaciones', 3),
         ListTile(
-          leading: Icon(Icons.help, color: theme.iconTheme.color),
-          title: Text(
+          leading: const Icon(Icons.help, color: Colors.white70),
+          title: const Text(
             'Ayuda',
-            style: theme.textTheme.bodyMedium,
+            style: TextStyle(color: Colors.white),
           ),
           onTap: () {
             Navigator.pop(context);
-            // ✅ No cambiamos el índice del navbar
             Navigator.pushNamed(context, '/pqrs');
           },
         ),
-
-        _buildListTile(context, theme, Icons.info, 'Acerca de', 5),
-        const Divider(),
-        _buildLogoutTile(context, theme),
+        _buildListTile(Icons.info, 'Acerca de', 5),
+        const Divider(color: Colors.white30),
+        ListTile(
+          leading: const Icon(Icons.logout, color: Colors.red),
+          title: const Text(
+            'Cerrar Sesión',
+            style: TextStyle(color: Colors.red),
+          ),
+          onTap: () => UserHelper.logout(context),
+        ),
       ],
     );
   }
 
-  Widget _buildListTile(
-    BuildContext context,
-    ThemeData theme,
-    IconData icon,
-    String title,
-    int index,
-  ) {
-    final bool isSelected = currentIndex == index;
-
+  Widget _buildListTile(IconData icon, String title, int index) {
+    final bool isSelected = widget.currentIndex == index;
     return ListTile(
       leading: Icon(
         icon,
-        color: isSelected ? theme.colorScheme.primary : theme.iconTheme.color,
+        color: isSelected ? AppColors.primary : Colors.white70,
       ),
       title: Text(
         title,
-        style: theme.textTheme.bodyMedium?.copyWith(
+        style: TextStyle(
+          color: isSelected ? AppColors.primary : Colors.white,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          color: isSelected
-              ? theme.colorScheme.primary
-              : theme.textTheme.bodyMedium?.color,
         ),
       ),
       trailing: isSelected
-          ? Icon(Icons.arrow_forward, color: theme.colorScheme.primary, size: 20)
+          ? const Icon(Icons.arrow_forward, color: AppColors.primary, size: 20)
           : null,
-      onTap: () {
-        // ✅ Cambiamos el índice ANTES de cerrar el Drawer
-        onItemSelected(index);
-
-        // ✅ Esperamos un instante y luego cerramos el Drawer
-        Future.delayed(const Duration(milliseconds: 150), () {
-          Navigator.pop(context);
-        });
-      },
       selected: isSelected,
-      selectedTileColor: theme.colorScheme.primary.withOpacity(0.1),
-    );
-  }
-
-  Widget _buildLogoutTile(BuildContext context, ThemeData theme) {
-    return ListTile(
-      leading: Icon(Icons.logout, color: theme.colorScheme.error),
-      title: Text(
-        'Cerrar Sesión',
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: theme.colorScheme.error,
-        ),
-      ),
-      onTap: () {
-        Navigator.pop(context);
-        onLogout();
-      },
+      selectedTileColor: AppColors.primary.withOpacity(0.1),
+      onTap: () => _handleNavigation(index),
     );
   }
 }

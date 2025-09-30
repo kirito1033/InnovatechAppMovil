@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/appbar.dart';
 import '../widgets/bottom_navbar.dart';
+import '../widgets/custom_drawer.dart';
 import '../services/auth_service.dart';
 import '../services/pqrs_service.dart';
 
@@ -12,6 +13,7 @@ class PqrsScreen extends StatefulWidget {
 }
 
 class _PqrsScreenState extends State<PqrsScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   List<Map<String, dynamic>> userPqrs = [];
   bool isLoading = true;
 
@@ -34,7 +36,6 @@ class _PqrsScreenState extends State<PqrsScreen> {
       }
 
       final data = await PqrsService.getUserPqrs(userId);
-
       if (mounted) {
         setState(() {
           userPqrs = List<Map<String, dynamic>>.from(data);
@@ -74,7 +75,6 @@ class _PqrsScreenState extends State<PqrsScreen> {
 
       _descripcionController.clear();
       setState(() => _tipoSeleccionado = "Petición");
-
       await _loadUserPqrs();
 
       if (mounted) {
@@ -139,8 +139,15 @@ class _PqrsScreenState extends State<PqrsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: const Color.fromARGB(255, 11, 68, 84),
       appBar: const CustomAppBar(),
+
+      // 🔹 Drawer centralizado con sección "Ayuda"
+      endDrawer: const CustomDrawer(currentIndex: 4),
+
+      bottomNavigationBar: CustomBottomNavBar(scaffoldKey: _scaffoldKey),
+
       body: RefreshIndicator(
         onRefresh: _loadUserPqrs,
         child: SingleChildScrollView(
@@ -149,7 +156,7 @@ class _PqrsScreenState extends State<PqrsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 🔹 Formulario
+              // 🔹 Formulario PQRS
               Card(
                 color: const Color(0xFF1F2937),
                 shape: RoundedRectangleBorder(
@@ -235,9 +242,10 @@ class _PqrsScreenState extends State<PqrsScreen> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 24),
 
-              // 🔹 Tabla con PQRS
+              // 🔹 Tabla PQRS
               if (isLoading)
                 const Center(child: CircularProgressIndicator())
               else if (userPqrs.isEmpty)
@@ -266,14 +274,20 @@ class _PqrsScreenState extends State<PqrsScreen> {
                         MaterialStateProperty.all(Colors.cyan.shade700),
                     dataRowColor:
                         MaterialStateProperty.all(const Color(0xFF1F2937)),
-                    border: TableBorder.all(
-                        color: Colors.cyan.withOpacity(0.3)),
+                    border:
+                        TableBorder.all(color: Colors.cyan.withOpacity(0.3)),
                     columns: const [
-                      DataColumn(label: Text("ID", style: TextStyle(color: Colors.white))),
-                      DataColumn(label: Text("Descripción", style: TextStyle(color: Colors.white))),
-                      DataColumn(label: Text("Tipo", style: TextStyle(color: Colors.white))),
-                      DataColumn(label: Text("Estado", style: TextStyle(color: Colors.white))),
-                      DataColumn(label: Text("Fecha", style: TextStyle(color: Colors.white))),
+                      DataColumn(
+                          label: Text("ID", style: TextStyle(color: Colors.white))),
+                      DataColumn(
+                          label:
+                              Text("Descripción", style: TextStyle(color: Colors.white))),
+                      DataColumn(
+                          label: Text("Tipo", style: TextStyle(color: Colors.white))),
+                      DataColumn(
+                          label: Text("Estado", style: TextStyle(color: Colors.white))),
+                      DataColumn(
+                          label: Text("Fecha", style: TextStyle(color: Colors.white))),
                     ],
                     rows: userPqrs.map((pqrs) {
                       final fecha = DateTime.tryParse(pqrs["created_at"] ?? "");
@@ -283,16 +297,26 @@ class _PqrsScreenState extends State<PqrsScreen> {
 
                       return DataRow(
                         cells: [
-                          DataCell(Text(pqrs["id"].toString(),
-                              style: const TextStyle(color: Colors.white)), onTap: () => _showPqrsDetails(pqrs)),
-                          DataCell(Text(pqrs["descripcion"] ?? "",
-                              style: const TextStyle(color: Colors.white)), onTap: () => _showPqrsDetails(pqrs)),
-                          DataCell(Text(pqrs["tipo_pqrs"] ?? "",
-                              style: const TextStyle(color: Colors.white)), onTap: () => _showPqrsDetails(pqrs)),
-                          DataCell(Text(pqrs["estado_pqrs"] ?? "",
-                              style: const TextStyle(color: Colors.white)), onTap: () => _showPqrsDetails(pqrs)),
-                          DataCell(Text(fechaStr,
-                              style: const TextStyle(color: Colors.white)), onTap: () => _showPqrsDetails(pqrs)),
+                          DataCell(
+                              Text(pqrs["id"].toString(),
+                                  style: const TextStyle(color: Colors.white)),
+                              onTap: () => _showPqrsDetails(pqrs)),
+                          DataCell(
+                              Text(pqrs["descripcion"] ?? "",
+                                  style: const TextStyle(color: Colors.white)),
+                              onTap: () => _showPqrsDetails(pqrs)),
+                          DataCell(
+                              Text(pqrs["tipo_pqrs"] ?? "",
+                                  style: const TextStyle(color: Colors.white)),
+                              onTap: () => _showPqrsDetails(pqrs)),
+                          DataCell(
+                              Text(pqrs["estado_pqrs"] ?? "",
+                                  style: const TextStyle(color: Colors.white)),
+                              onTap: () => _showPqrsDetails(pqrs)),
+                          DataCell(
+                              Text(fechaStr,
+                                  style: const TextStyle(color: Colors.white)),
+                              onTap: () => _showPqrsDetails(pqrs)),
                         ],
                       );
                     }).toList(),
@@ -316,7 +340,6 @@ class _PqrsScreenState extends State<PqrsScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: const CustomBottomNavBar(),
     );
   }
 }

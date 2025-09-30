@@ -3,6 +3,7 @@ import '../models/producto_model.dart';
 import '../services/producto.dart';
 import '../widgets/appbar.dart';
 import '../widgets/bottom_navbar.dart';
+import '../widgets/custom_drawer.dart';
 import 'product_detail_screen.dart';
 
 class BusquedaScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class BusquedaScreen extends StatefulWidget {
 }
 
 class _BusquedaScreenState extends State<BusquedaScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final ApiService apiService = ApiService();
   late Future<List<Producto>> productosFuture;
 
@@ -42,28 +44,28 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
   }
 
   void _buscarProductos() {
-  setState(() {
-    productosFuture = apiService.buscarProductos(
-      widget.query,
-      categoria: widget.categoria ?? selectedCategoria ?? widget.query,
-      color: selectedColor,
-      marca: selectedMarca,
-      ram: selectedRam,
-      almacenamiento: selectedAlmacenamiento,
-      sistemaOperativo: selectedSO,
-      resolucion: selectedResolucion,
-      precioMin: precioMin,
-      precioMax: precioMax,
-    );
-  });
-}
+    setState(() {
+      productosFuture = apiService.buscarProductos(
+        widget.query,
+        categoria: widget.categoria ?? selectedCategoria ?? widget.query,
+        color: selectedColor,
+        marca: selectedMarca,
+        ram: selectedRam,
+        almacenamiento: selectedAlmacenamiento,
+        sistemaOperativo: selectedSO,
+        resolucion: selectedResolucion,
+        precioMin: precioMin,
+        precioMax: precioMax,
+      );
+    });
+  }
 
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,
       labelStyle: const TextStyle(color: Colors.white70),
       filled: true,
-      fillColor: Color.fromARGB(255, 11, 68, 84),
+      fillColor: const Color.fromARGB(255, 11, 68, 84),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Colors.white24),
@@ -83,9 +85,15 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: const Color.fromARGB(255, 11, 68, 84),
       appBar: const CustomAppBar(),
-      bottomNavigationBar: const CustomBottomNavBar(),
-      backgroundColor: Color.fromARGB(255, 11, 68, 84),
+
+      // 🔹 Drawer centralizado
+      endDrawer: const CustomDrawer(currentIndex: -1),
+
+      bottomNavigationBar: CustomBottomNavBar(scaffoldKey: _scaffoldKey),
+
       body: FutureBuilder<List<Producto>>(
         future: productosFuture,
         builder: (context, snapshot) {
@@ -100,264 +108,244 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
             );
           }
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(8.0),
+          final productos = snapshot.data ?? [];
+
+          return Padding(
+            padding: const EdgeInsets.all(12),
             child: Column(
               children: [
                 // 🔹 Filtros
-                DropdownButtonFormField<String>(
-                  dropdownColor: appBarBackground,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: _inputDecoration("Filtrar por color"),
-                  value: selectedColor,
-                  items: ["Rojo", "Negro", "Blanco", "Azul"]
-                      .map((color) => DropdownMenuItem(
-                            value: color,
-                            child: Text(color),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    selectedColor = value;
-                    _buscarProductos();
-                  },
-                ),
-                const SizedBox(height: 8),
-
-                DropdownButtonFormField<String>(
-                  dropdownColor: appBarBackground,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: _inputDecoration("Filtrar por marca"),
-                  value: selectedMarca,
-                  items: ["Samsung", "Apple", "Xiaomi", "Huawei"]
-                      .map((marca) => DropdownMenuItem(
-                            value: marca,
-                            child: Text(marca),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    selectedMarca = value;
-                    _buscarProductos();
-                  },
-                ),
-                const SizedBox(height: 8),
-
-                DropdownButtonFormField<String>(
-                  dropdownColor: appBarBackground,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: _inputDecoration("Filtrar por categoría"),
-                  value: selectedCategoria,
-                  items: ["Celulares", "Tablets", "Accesorios"]
-                      .map((cat) => DropdownMenuItem(
-                            value: cat,
-                            child: Text(cat),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    selectedCategoria = value;
-                    _buscarProductos();
-                  },
-                ),
-                const SizedBox(height: 8),
-
-                // Filtros de precio
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        style: const TextStyle(color: Colors.white),
-                        decoration: _inputDecoration("Precio mínimo"),
-                        keyboardType: TextInputType.number,
-                        onSubmitted: (value) {
-                          precioMin = double.tryParse(value);
+                Expanded(
+                  flex: 0,
+                  child: Column(
+                    children: [
+                      _buildDropdown(
+                        label: "Color",
+                        value: selectedColor,
+                        items: ["Rojo", "Negro", "Blanco", "Azul"],
+                        onChanged: (val) {
+                          selectedColor = val;
                           _buscarProductos();
                         },
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        style: const TextStyle(color: Colors.white),
-                        decoration: _inputDecoration("Precio máximo"),
-                        keyboardType: TextInputType.number,
-                        onSubmitted: (value) {
-                          precioMax = double.tryParse(value);
+                      const SizedBox(height: 8),
+                      _buildDropdown(
+                        label: "Marca",
+                        value: selectedMarca,
+                        items: ["Samsung", "Apple", "Xiaomi", "Huawei"],
+                        onChanged: (val) {
+                          selectedMarca = val;
                           _buscarProductos();
                         },
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      _buildDropdown(
+                        label: "Categoría",
+                        value: selectedCategoria,
+                        items: ["Celulares", "Tablets", "Accesorios"],
+                        onChanged: (val) {
+                          selectedCategoria = val;
+                          _buscarProductos();
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              style: const TextStyle(color: Colors.white),
+                              decoration: _inputDecoration("Precio mínimo"),
+                              keyboardType: TextInputType.number,
+                              onSubmitted: (value) {
+                                precioMin = double.tryParse(value);
+                                _buscarProductos();
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: TextField(
+                              style: const TextStyle(color: Colors.white),
+                              decoration: _inputDecoration("Precio máximo"),
+                              keyboardType: TextInputType.number,
+                              onSubmitted: (value) {
+                                precioMax = double.tryParse(value);
+                                _buscarProductos();
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      _buildDropdown(
+                        label: "RAM",
+                        value: selectedRam,
+                        items: ["4", "6", "8", "12"],
+                        onChanged: (val) {
+                          selectedRam = val;
+                          _buscarProductos();
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      _buildDropdown(
+                        label: "Almacenamiento",
+                        value: selectedAlmacenamiento,
+                        items: ["64", "128", "256", "512"],
+                        onChanged: (val) {
+                          selectedAlmacenamiento = val;
+                          _buscarProductos();
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      _buildDropdown(
+                        label: "Sistema operativo",
+                        value: selectedSO,
+                        items: ["Android", "iOS", "Windows"],
+                        onChanged: (val) {
+                          selectedSO = val;
+                          _buscarProductos();
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      _buildDropdown(
+                        label: "Resolución",
+                        value: selectedResolucion,
+                        items: ["HD", "Full HD", "2K", "4K"],
+                        onChanged: (val) {
+                          selectedResolucion = val;
+                          _buscarProductos();
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 8),
 
-                DropdownButtonFormField<String>(
-                  dropdownColor: appBarBackground,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: _inputDecoration("Filtrar por RAM"),
-                  value: selectedRam,
-                  items: ["4", "6", "8", "12"]
-                      .map((ram) => DropdownMenuItem(
-                            value: ram,
-                            child: Text("$ram GB"),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    selectedRam = value;
-                    _buscarProductos();
-                  },
-                ),
-                const SizedBox(height: 8),
-
-                DropdownButtonFormField<String>(
-                  dropdownColor: appBarBackground,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: _inputDecoration("Filtrar por almacenamiento"),
-                  value: selectedAlmacenamiento,
-                  items: ["64", "128", "256", "512"]
-                      .map((alm) => DropdownMenuItem(
-                            value: alm,
-                            child: Text("$alm GB"),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    selectedAlmacenamiento = value;
-                    _buscarProductos();
-                  },
-                ),
-                const SizedBox(height: 8),
-
-                DropdownButtonFormField<String>(
-                  dropdownColor: appBarBackground,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: _inputDecoration("Filtrar por sistema operativo"),
-                  value: selectedSO,
-                  items: ["Android", "iOS", "Windows"]
-                      .map((so) => DropdownMenuItem(
-                            value: so,
-                            child: Text(so),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    selectedSO = value;
-                    _buscarProductos();
-                  },
-                ),
-                const SizedBox(height: 8),
-
-                DropdownButtonFormField<String>(
-                  dropdownColor: appBarBackground,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: _inputDecoration("Filtrar por resolución"),
-                  value: selectedResolucion,
-                  items: ["HD", "Full HD", "2K", "4K"]
-                      .map((res) => DropdownMenuItem(
-                            value: res,
-                            child: Text(res),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    selectedResolucion = value;
-                    _buscarProductos();
-                  },
-                ),
                 const SizedBox(height: 12),
 
                 // 🔹 Resultados
-                if (!snapshot.hasData || snapshot.data!.isEmpty)
-                  const Center(
-                    child: Text("No se encontraron productos",
-                        style: TextStyle(color: Colors.white)),
-                  )
-                else
-                  Column(
-                    children: snapshot.data!.map((producto) {
-                      return InkWell(
-                          onTap: () async {
-                            // 🔹 Mostrar preload
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false, // No cerrar al hacer tap afuera
-                              builder: (context) => const Center(
-                                child: CircularProgressIndicator(color: Color(0xFF048d94)),
-                              ),
-                            );
+                Expanded(
+                  flex: 1,
+                  child: productos.isEmpty
+                      ? const Center(
+                          child: Text(
+                            "No se encontraron productos",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: productos.length,
+                          itemBuilder: (context, index) {
+                            final producto = productos[index];
+                            return InkWell(
+                              onTap: () async {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: Color(0xFF048d94)),
+                                  ),
+                                );
 
-                            // 🔹 Simulación de carga (puedes quitar el delay si no hace falta)
-                            await Future.delayed(const Duration(seconds: 1));
+                                await Future.delayed(
+                                    const Duration(milliseconds: 500));
 
-                            // 🔹 Ir al detalle
-                            Navigator.pop(context); // Cerrar el preload
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProductDetailScreen(producto: producto),
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        ProductDetailScreen(producto: producto),
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                color: Colors.white,
+                                elevation: 4,
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Image.network(
+                                        "https://rosybrown-ape-589569.hostingersite.com/uploads/${producto.imagen}",
+                                        width: 90,
+                                        height: 90,
+                                        fit: BoxFit.contain,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              producto.nom,
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              "\$${producto.precio}",
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.green,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              producto.descripcion ??
+                                                  "Sin descripción",
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                color: Colors.black54,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             );
                           },
-                          child: Card(
-                            color: Colors.white,
-                            elevation: 4,
-                            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Image.network(
-                                    "https://rosybrown-ape-589569.hostingersite.com/uploads/${producto.imagen}",
-                                    width: 90,
-                                    height: 90,
-                                    fit: BoxFit.contain,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          producto.nom,
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          "\$${producto.precio}",
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.green,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          // ignore: dead_code
-                                          producto.descripcion ?? "Sin descripción",
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            color: Colors.black54,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                      );
-                    }).toList(),
-                  ),
+                        ),
+                ),
               ],
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildDropdown({
+    required String label,
+    String? value,
+    required List<String> items,
+    required Function(String?) onChanged,
+  }) {
+    return DropdownButtonFormField<String>(
+      dropdownColor: appBarBackground,
+      style: const TextStyle(color: Colors.white),
+      decoration: _inputDecoration("Filtrar por $label"),
+      value: value,
+      items: items
+          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+          .toList(),
+      onChanged: onChanged,
     );
   }
 }
