@@ -3,6 +3,10 @@ import 'package:app_links/app_links.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/notifications_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/about_screen.dart';
 import 'screens/registerscreen.dart';
 import 'screens/change_password_screen.dart';
 import 'screens/pqrsscreens.dart';
@@ -79,6 +83,10 @@ class _MyAppState extends State<MyApp> {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => const HomeScreen(),
+        '/profile': (context) => const ProfileScreen(),
+        '/settings': (context) => const SettingsScreen(),
+        '/notifications': (context) => const NotificationsScreen(),
+        '/about': (context) => const AboutScreen(),
         '/pqrs': (context) => const PqrsScreen(),
         '/reset-password': (context) {
           final token = ModalRoute.of(context)!.settings.arguments as String;

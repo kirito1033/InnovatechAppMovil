@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import '/widgets/custom_drawer.dart';
-import '../screens/busqueda_screen.dart';
 import '../screens/home_screen.dart';
+import '../screens/cart_screen.dart';
+import '../screens/busqueda_screen.dart';
+import '../screens/profile_screen.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
-  const CustomBottomNavBar({super.key});
+  final GlobalKey<ScaffoldState> scaffoldKey; // ✅ para abrir el drawer desde cualquier vista
+
+  const CustomBottomNavBar({super.key, required this.scaffoldKey});
 
   @override
   State<CustomBottomNavBar> createState() => _CustomBottomNavBarState();
@@ -12,7 +15,6 @@ class CustomBottomNavBar extends StatefulWidget {
 
 class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   int _selectedIndex = 0;
-  static const Color navBarColor = Color.fromARGB(255, 2, 15, 31);
   static const Duration animDuration = Duration(milliseconds: 250);
 
   @override
@@ -20,21 +22,24 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
     super.didChangeDependencies();
     final route = ModalRoute.of(context)?.settings.name;
 
-    // Detecta en qué ruta estás y ajusta el índice seleccionado
     if (route?.contains('home') ?? false) {
       _selectedIndex = 0;
+    } else if (route?.contains('carrito') ?? false) {
+      _selectedIndex = 1;
     } else if (route?.contains('busqueda') ?? false) {
       _selectedIndex = 2;
+    } else if (route?.contains('perfil') ?? false) {
+      _selectedIndex = 3;
     }
   }
 
   Future<void> _showPreloadAndNavigate(BuildContext context, Widget page,
-      {bool removeStack = false}) async {
+      {bool removeStack = false, required String routeName}) async {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => const Center(
-        child: CircularProgressIndicator(color: Color(0xFF048d94)),
+        child: CircularProgressIndicator(),
       ),
     );
 
@@ -48,7 +53,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
           context,
           MaterialPageRoute(
             builder: (_) => page,
-            settings: const RouteSettings(name: 'home'),
+            settings: RouteSettings(name: routeName),
           ),
           (route) => false,
         );
@@ -57,7 +62,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
           context,
           MaterialPageRoute(
             builder: (_) => page,
-            settings: const RouteSettings(name: 'busqueda'),
+            settings: RouteSettings(name: routeName),
           ),
         );
       }
@@ -65,69 +70,70 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   }
 
   void _onItemTapped(BuildContext context, int index) {
-    if (index == _selectedIndex) return; // 👈 Evita recargar si ya está seleccionado
+    if (index == _selectedIndex) return;
 
     setState(() {
       _selectedIndex = index;
     });
 
-    if (index == 4) {
-      Scaffold.of(context).openEndDrawer();
-    } else if (index == 0) {
-      _showPreloadAndNavigate(context, const HomeScreen(), removeStack: true);
-    } else if (index == 2) {
-      _showPreloadAndNavigate(
-        context,
-        const BusquedaScreen(
-          query: '',
-          categoria: 'Ofertas',
-        ),
-      );
+    switch (index) {
+      case 0:
+        _showPreloadAndNavigate(context, const HomeScreen(),
+            removeStack: true, routeName: 'home');
+        break;
+      case 1:
+        _showPreloadAndNavigate(context, const CartScreen(),
+            routeName: 'carrito');
+        break;
+      case 2:
+        _showPreloadAndNavigate(
+          context,
+          const BusquedaScreen(query: '', categoria: 'Ofertas'),
+          routeName: 'busqueda',
+        );
+        break;
+      case 3:
+        _showPreloadAndNavigate(context, const ProfileScreen(),
+            routeName: 'perfil');
+        break;
+      case 4:
+        widget.scaffoldKey.currentState?.openEndDrawer();
+        break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (navContext) => AnimatedContainer(
-        duration: animDuration,
-        curve: Curves.easeInOut,
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: (index) => _onItemTapped(navContext, index),
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: navBarColor,
-          selectedItemColor: const Color(0xFF04ebec),
-          unselectedItemColor: Colors.white70,
-          showUnselectedLabels: true,
-          elevation: 8,
-          selectedFontSize: 14,
-          unselectedFontSize: 12,
-          selectedIconTheme: const IconThemeData(size: 30),
-          unselectedIconTheme: const IconThemeData(size: 26),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: "Home",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart),
-              label: "Carrito",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.local_offer),
-              label: "Ofertas",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: "Perfil",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.more_horiz),
-              label: "Más",
-            ),
-          ],
-        ),
+    final theme = Theme.of(context);
+
+    return AnimatedContainer(
+      duration: animDuration,
+      curve: Curves.easeInOut,
+      child: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) => _onItemTapped(context, index),
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: "Carrito",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_offer),
+            label: "Ofertas",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: "Perfil",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.more_horiz),
+            label: "Más",
+          ),
+        ],
       ),
     );
   }

@@ -5,6 +5,7 @@ import '../widgets/appbar.dart';
 import '../widgets/bottom_navbar.dart';
 import '../widgets/product_detail/product_image.dart';
 import '../widgets/product_detail/product_features.dart';
+import '../theme/app_theme.dart'; // 👈 importa tu theme
 
 class ProductDetailScreen extends StatefulWidget {
   final Producto producto;
@@ -16,21 +17,24 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int cantidadSeleccionada = 1;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final precioFormateado =
         NumberFormat.currency(locale: 'es_CO', symbol: '\$', decimalDigits: 0)
             .format(widget.producto.precio);
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: const CustomAppBar(),
-      bottomNavigationBar: const CustomBottomNavBar(),
+      bottomNavigationBar: CustomBottomNavBar(scaffoldKey: _scaffoldKey),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Card(
-          color: Colors.white,
+          color: theme.cardColor, // 👈 usa color de tarjeta del tema
           elevation: 6,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -47,21 +51,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                /// Nombre y precio
+                /// Nombre
                 Text(
                   widget.producto.nom,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: theme.textTheme.titleLarge,
                 ),
                 const SizedBox(height: 8),
+
+                /// Precio
                 Text(
                   precioFormateado,
-                  style: const TextStyle(
+                  style: theme.textTheme.titleLarge?.copyWith(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF048d94),
+                    color: AppColors.primary, // 👈 color del theme
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -75,19 +77,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           : Icons.error,
                       color: widget.producto.existencias > 0
                           ? Colors.green
-                          : Colors.red,
+                          : theme.colorScheme.error,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       widget.producto.existencias > 0
                           ? "Stock disponible (${widget.producto.existencias} unidades)"
                           : "Sin stock disponible",
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: widget.producto.existencias > 0
                             ? Colors.green
-                            : Colors.red,
+                            : theme.colorScheme.error,
                       ),
                     ),
                   ],
@@ -97,10 +98,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 /// Selector de cantidad
                 Row(
                   children: [
-                    const Text(
+                    Text(
                       "Cantidad:",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     DropdownButton<int>(
@@ -125,9 +128,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 const SizedBox(height: 16),
 
                 /// Descripción
-                const Text(
+                Text(
                   "Descripción",
-                  style: TextStyle(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
@@ -135,28 +138,34 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 const SizedBox(height: 6),
                 Text(
                   widget.producto.descripcion,
-                  style: const TextStyle(fontSize: 14),
+                  style: theme.textTheme.bodyMedium,
                 ),
                 const Divider(height: 24),
 
                 /// Características
-                const Text(
+                Text(
                   "Características del producto",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   widget.producto.caracteristicas.isNotEmpty
                       ? widget.producto.caracteristicas
                       : "No disponible",
-                  style: const TextStyle(fontSize: 14),
+                  style: theme.textTheme.bodyMedium,
                 ),
                 const Divider(height: 24),
 
                 /// Detalles técnicos
-                const Text(
+                Text(
                   "Detalles técnicos",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 ProductFeatures(producto: widget.producto),
@@ -164,25 +173,26 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                 /// Política de devolución
                 Row(
-                  children: const [
-                    Icon(Icons.replay, color: Colors.blue),
-                    SizedBox(width: 8),
+                  children: [
+                    Icon(Icons.replay, color: AppColors.primary),
+                    const SizedBox(width: 8),
                     Text(
                       "Devolución gratis (30 días)",
-                      style:
-                          TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Row(
-                  children: const [
-                    Icon(Icons.assignment_turned_in, color: Colors.blue),
-                    SizedBox(width: 8),
+                  children: [
+                    Icon(Icons.assignment_turned_in, color: AppColors.primary),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         "Recibe el producto que esperabas o te devolvemos tu dinero.",
-                        style: TextStyle(fontSize: 14),
+                        style: theme.textTheme.bodyMedium,
                       ),
                     ),
                   ],
@@ -194,9 +204,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF25cff2),
-                        ),
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -205,19 +212,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           );
                         },
-                        icon:
-                            const Icon(Icons.shopping_cart, color: Colors.white),
-                        label: const Text(
-                          "Agregar al carrito",
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
+                        icon: const Icon(Icons.shopping_cart),
+                        label: const Text("Agregar al carrito"),
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: AppColors.buttonText,
                         ),
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -227,15 +231,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           );
                         },
-                        icon:
-                            const Icon(Icons.payment, color: Colors.white),
+                        icon: const Icon(Icons.payment),
                         label: const Text(
                           "Comprar ahora",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
