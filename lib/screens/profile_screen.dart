@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../widgets/appbar.dart';
+import '../widgets/bottom_navbar.dart';
+import '../widgets/custom_drawer.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -8,6 +11,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   final TextEditingController nombreController = TextEditingController(text: "Cliente");
   final TextEditingController segundoNombreController = TextEditingController(text: "Cliente2");
   final TextEditingController apellidoController = TextEditingController(text: "Apellido");
@@ -21,88 +26,110 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          // Avatar
-          Center(
-            child: Stack(
-              children: [
-                CircleAvatar(
-                  radius: 60,
-                  backgroundImage: const AssetImage("assets/avatar.png"), // Cambia por tu imagen
-                  backgroundColor: Colors.grey.shade300,
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: CircleAvatar(
-                    backgroundColor: Colors.teal,
-                    child: const Icon(Icons.camera_alt, color: Colors.white),
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      key: _scaffoldKey,
+      appBar: const CustomAppBar(),
+
+      // 🔹 Drawer centralizado con sección "Perfil"
+      endDrawer: const CustomDrawer(currentIndex: 1),
+
+      bottomNavigationBar: CustomBottomNavBar(scaffoldKey: _scaffoldKey),
+
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // Avatar
+            Center(
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundImage: const AssetImage("assets/img/icon.png"),
+                    backgroundColor: theme.colorScheme.surfaceVariant,
                   ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: CircleAvatar(
+                      backgroundColor: theme.colorScheme.primary,
+                      child: Icon(Icons.camera_alt, color: theme.colorScheme.onPrimary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Campos de perfil
+            _buildTextField(context, "Primer Nombre", nombreController),
+            _buildTextField(context, "Segundo Nombre", segundoNombreController),
+            _buildTextField(context, "Primer Apellido", apellidoController),
+            _buildTextField(context, "Segundo Apellido", segundoApellidoController),
+            _buildTextField(context, "Nombre de Usuario", usuarioController),
+            _buildTextField(context, "Correo Electrónico", correoController, keyboardType: TextInputType.emailAddress),
+            _buildTextField(context, "Documento", documentoController, enabled: false),
+            _buildTextField(context, "Primer Teléfono", telefono1Controller, keyboardType: TextInputType.phone),
+            _buildTextField(context, "Segundo Teléfono", telefono2Controller, keyboardType: TextInputType.phone),
+            _buildTextField(context, "Dirección", direccionController),
+            const SizedBox(height: 20),
+
+            // Botones de acción
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.secondary,
+                  ),
+                  onPressed: () {
+                    // 🔹 Resetear valores de ejemplo
+                    setState(() {
+                      nombreController.text = "Cliente";
+                      segundoNombreController.text = "Cliente2";
+                      apellidoController.text = "Apellido";
+                      segundoApellidoController.text = "Apellido2";
+                      usuarioController.text = "cliente";
+                      correoController.text = "cliente2@gmail.com";
+                      documentoController.text = "12321435565";
+                      telefono1Controller.text = "1242356666";
+                      telefono2Controller.clear();
+                      direccionController.text = "calle 12, #31-85";
+                    });
+                  },
+                  child: Text("Cancelar", style: TextStyle(color: theme.colorScheme.onSecondary)),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                  ),
+                  onPressed: () {
+                    // 🔹 Guardar cambios (futuro API)
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Cambios guardados")),
+                    );
+                  },
+                  child: Text("Guardar Cambios", style: TextStyle(color: theme.colorScheme.onPrimary)),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 20),
-
-          // Campos
-          _buildTextField("Primer Nombre", nombreController),
-          _buildTextField("Segundo Nombre", segundoNombreController),
-          _buildTextField("Primer Apellido", apellidoController),
-          _buildTextField("Segundo Apellido", segundoApellidoController),
-          _buildTextField("Nombre de Usuario", usuarioController),
-          _buildTextField("Correo Electrónico", correoController, keyboardType: TextInputType.emailAddress),
-          _buildTextField("Documento", documentoController, enabled: false),
-          _buildTextField("Primer Teléfono", telefono1Controller, keyboardType: TextInputType.phone),
-          _buildTextField("Segundo Teléfono", telefono2Controller, keyboardType: TextInputType.phone),
-          _buildTextField("Dirección", direccionController),
-
-          const SizedBox(height: 20),
-
-          // Botones
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.shade600),
-                onPressed: () {
-                  // simplemente resetea valores de ejemplo
-                  setState(() {
-                    nombreController.text = "Cliente";
-                    segundoNombreController.text = "Cliente2";
-                    apellidoController.text = "Apellido";
-                    segundoApellidoController.text = "Apellido2";
-                    usuarioController.text = "cliente";
-                    correoController.text = "cliente2@gmail.com";
-                    documentoController.text = "12321435565";
-                    telefono1Controller.text = "1242356666";
-                    telefono2Controller.clear();
-                    direccionController.text = "calle 12, #31-85";
-                  });
-                },
-                child: const Text("Cancelar"),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
-                onPressed: () {
-                  // TODO: Guardar cambios en API
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Cambios guardados")),
-                  );
-                },
-                child: const Text("Guardar Cambios"),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller,
-      {TextInputType keyboardType = TextInputType.text, bool enabled = true}) {
+  Widget _buildTextField(
+    BuildContext context,
+    String label,
+    TextEditingController controller, {
+    TextInputType keyboardType = TextInputType.text,
+    bool enabled = true,
+  }) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: TextField(
@@ -111,10 +138,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         enabled: enabled,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: Colors.teal),
+          labelStyle: TextStyle(color: theme.colorScheme.primary),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.teal, width: 2),
+            borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
             borderRadius: BorderRadius.circular(12),
           ),
         ),

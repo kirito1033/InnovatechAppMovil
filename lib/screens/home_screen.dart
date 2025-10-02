@@ -7,8 +7,6 @@ import '../widgets/bottom_navbar.dart';
 import '../widgets/custom_drawer.dart';
 import '../services/producto.dart';
 import '../models/categoria_model.dart';
-import '../services/auth_service.dart';
-import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,105 +16,67 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final ApiService apiService = ApiService();
   late Future<List<Categoria>> categoriasFuture;
-  String? username;
-  String? correo;
 
   @override
   void initState() {
     super.initState();
     categoriasFuture = apiService.fetchCategoriasConProductos();
-    _loadUsername();
-  }
-
-  Future<void> _loadUsername() async {
-  final userData = await AuthService.getUserData();
-
-  if (mounted) {
-    setState(() {
-      username = userData["nombre"] ?? "Usuario";
-      correo = userData["correo"] ?? "Correo";
-    });
-  }
-}
-
-  Future<void> _handleLogout() async {
-    await AuthService.logout(); // 🔹 Borra token y datos
-    if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: const CustomAppBar(),
-      body: Column(
-        children: [
-          if (username != null)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+      body: FutureBuilder<List<Categoria>>(
+        future: categoriasFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text("No hay categorías"));
+          }
 
-            ),
-          Expanded(
-            child: FutureBuilder<List<Categoria>>(
-              future: categoriasFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text("Error: ${snapshot.error}"));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text("No hay categorías"));
-                }
+          final categorias = snapshot.data!;
 
-                final categorias = snapshot.data!;
-
-                return ListView.builder(
-                  itemCount: categorias.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return const Column(
-                        children: [
-                          OfertasCarousel(),
-                          SizedBox(height: 20),
-                        ],
-                      );
-                    }
-
-                    final categoria = categorias[index - 1];
-
-                    if (categoria.productos.isEmpty) return const SizedBox();
-
-                    return Column(
-                      children: [
-                        ProductosCarrusel(
-                          categoriaId: categoria.id,
-                          categoriaNom: categoria.nom,
-                          productos: categoria.productos,
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                    );
-                  },
+          return ListView.builder(
+            itemCount: categorias.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return const Column(
+                  children: [
+                    OfertasCarousel(),
+                    SizedBox(height: 20),
+                  ],
                 );
-              },
-            ),
-          ),
-        ],
+              }
+
+              final categoria = categorias[index - 1];
+
+              if (categoria.productos.isEmpty) return const SizedBox();
+
+              return Column(
+                children: [
+                  ProductosCarrusel(
+                    categoriaId: categoria.id,
+                    categoriaNom: categoria.nom,
+                    productos: categoria.productos,
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              );
+            },
+          );
+        },
       ),
-      endDrawer: CustomDrawer(
-        username: username ?? "Usuario",
-        correo: correo ?? "correo@ejemplo.com",
-        currentIndex: 0,
-        onItemSelected: (index) => Navigator.pop(context),
-        onLogout: _handleLogout,
-      ),
-      bottomNavigationBar: const CustomBottomNavBar(),
+      // 🔹 Drawer simplificado: solo pasamos el índice actual
+      endDrawer: const CustomDrawer(currentIndex: 0),
+      bottomNavigationBar: CustomBottomNavBar(scaffoldKey: _scaffoldKey),
     );
   }
 }
