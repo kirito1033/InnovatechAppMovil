@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:intl/intl.dart';
 import '../widgets/appbar.dart';
 import '../widgets/ofertas_carousel.dart';
 import '../widgets/bottom_navbar.dart';
@@ -35,11 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
         future: categoriasFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // 🔹 Pantalla de carga inicial
             return const Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFF048d94), // color de la app
-              ),
+              child: CircularProgressIndicator(color: Color(0xFF048d94)),
             );
           } else if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
@@ -49,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           final categorias = snapshot.data!;
           return ListView.builder(
-            itemCount: categorias.length + 1, // +1 para ofertas
+            itemCount: categorias.length + 1,
             itemBuilder: (context, index) {
               if (index == 0) {
                 return const Column(
@@ -61,9 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
               }
 
               final categoria = categorias[index - 1];
-              if (categoria.productos.isEmpty) {
-                return const SizedBox(); // no renderizar categorías vacías
-              }
+              if (categoria.productos.isEmpty) return const SizedBox();
 
               return Column(
                 children: [
@@ -84,7 +80,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-/// 🔹 Carrusel de productos con navegación a detalle
 class ProductosCarrusel extends StatelessWidget {
   final int categoriaId;
   final String categoriaNom;
@@ -99,14 +94,13 @@ class ProductosCarrusel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (productos.isEmpty) {
-      return const SizedBox();
-    }
+    if (productos.isEmpty) return const SizedBox();
+
+    final NumberFormat currencyFormatter = NumberFormat("#,###", "es_CO");
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // 🔹 Caja de título de la categoría
         Container(
           margin: const EdgeInsets.symmetric(vertical: 10),
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -131,37 +125,34 @@ class ProductosCarrusel extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
         ),
-
-        // 🔹 Carrusel de productos
         CarouselSlider(
           options: CarouselOptions(
-            height: 300,
+            height: 330,
             autoPlay: true,
             enlargeCenterPage: false,
             viewportFraction: 0.6,
             enableInfiniteScroll: true,
           ),
           items: productos.map((producto) {
+            // 🔹 Verificación de la descripción en consola
+            debugPrint("Producto '${producto.nom}' descripción: ${producto.descripcion}");
+
             return Builder(
               builder: (BuildContext context) {
                 return GestureDetector(
                   onTap: () async {
-                    // 🔹 Mostrar pantalla de carga antes de ir al detalle
                     showDialog(
                       context: context,
                       barrierDismissible: false,
                       builder: (context) => const Center(
-                        child: CircularProgressIndicator(
-                          color: Color(0xFF048d94), // color de la app
-                        ),
+                        child: CircularProgressIndicator(color: Color(0xFF048d94)),
                       ),
                     );
 
                     try {
                       final productoDetalle = await ApiService().fetchProductoById(producto.id);
-                      
                       if (context.mounted) {
-                        Navigator.pop(context); // cerrar el loading
+                        Navigator.pop(context);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -170,14 +161,14 @@ class ProductosCarrusel extends StatelessWidget {
                         );
                       }
                     } catch (e) {
-                      Navigator.pop(context); // cerrar el loading
+                      Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text("Error al cargar producto: $e")),
                       );
                     }
                   },
                   child: Card(
-                    color: const Color.fromARGB(255, 255, 255, 255),
+                    color: Colors.white,
                     elevation: 4,
                     margin: const EdgeInsets.symmetric(horizontal: 5),
                     shape: RoundedRectangleBorder(
@@ -188,40 +179,53 @@ class ProductosCarrusel extends StatelessWidget {
                         AspectRatio(
                           aspectRatio: 1,
                           child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(12),
-                            ),
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                             child: Image.network(
                               "https://rosybrown-ape-589569.hostingersite.com/uploads/${producto.imagen}",
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) {
-                                return const Icon(
-                                  Icons.broken_image,
-                                  size: 80,
-                                  color: Colors.grey,
-                                );
+                                return const Icon(Icons.broken_image, size: 80, color: Colors.grey);
                               },
                             ),
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          producto.nom,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                producto.nom,
+                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                producto.descripcion,
+                                style: const TextStyle(
+                                  fontSize: 14, // 🔹 descripción más grande
+                                  color: Colors.black,
+                                ),
+                                maxLines: 2, // 🔹 máximo 2 líneas
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 6),
+                              Center(
+                                child: Text(
+                                  "\$${currencyFormatter.format(producto.precio)}",
+                                  style: const TextStyle(
+                                    fontSize: 18, // 🔹 precio más grande
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF048d94),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                            ],
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                        Text(
-                          "\$${producto.precio}",
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF048d94),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
                       ],
                     ),
                   ),
