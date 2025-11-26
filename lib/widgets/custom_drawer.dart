@@ -45,6 +45,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
       case 3:
         Navigator.pushReplacementNamed(context, '/notifications');
         break;
+      case 4:  // 🆕 NUEVO
+        Navigator.pushReplacementNamed(context, '/purchases');
+        break;
       case 5:
         Navigator.pushReplacementNamed(context, '/about');
         break;
@@ -114,6 +117,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
         _buildListTile(Icons.settings, 'Configuración', 2),
         const Divider(color: Colors.white30),
         _buildListTile(Icons.notifications, 'Notificaciones', 3),
+        _buildListTile(Icons.receipt_long, 'Mis Compras', 4),
         ListTile(
           leading: const Icon(Icons.help, color: Colors.white70),
           title: const Text(

@@ -10,6 +10,7 @@ import 'screens/about_screen.dart';
 import 'screens/registerscreen.dart';
 import 'screens/change_password_screen.dart';
 import 'screens/pqrsscreens.dart';
+import 'screens/purchases_screen.dart';
 import 'theme/app_theme.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -78,7 +79,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       navigatorKey: navigatorKey,
-      home: const SplashScreen(), // ✅ Solo renderiza el SplashScreen al inicio
+      home: const SplashScreen(),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
@@ -88,6 +89,7 @@ class _MyAppState extends State<MyApp> {
         '/notifications': (context) => const NotificationsScreen(),
         '/about': (context) => const AboutScreen(),
         '/pqrs': (context) => const PqrsScreen(),
+        '/purchases': (context) => const PurchasesScreen(),
         '/reset-password': (context) {
           final token = ModalRoute.of(context)!.settings.arguments as String;
           return ChangePasswordScreen(token: token);

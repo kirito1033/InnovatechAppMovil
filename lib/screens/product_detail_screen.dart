@@ -128,7 +128,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     children: [
                       ProductImage(
                         imageUrl:
-                            "https://rosybrown-ape-589569.hostingersite.com/uploads/${widget.producto.imagen}",
+                            "https://innovatech-mvc-v-2-0.onrender.com/uploads/${widget.producto.imagen}",
                       ),
                       const SizedBox(height: 16),
                       Text(

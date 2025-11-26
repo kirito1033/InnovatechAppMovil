@@ -21,19 +21,14 @@ class AuthService {
       if (response.statusCode == 200) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString("token", data["token"]);
-
-        // 🚨 Guardamos TODO el objeto (no solo el user)
         await prefs.setString("usuarioData", jsonEncode(data));
 
-        // Guardamos el userId aparte para fácil acceso
         if (data["user"] != null && data["user"]["id"] != null) {
           await prefs.setInt("userId", data["user"]["id"]);
           print("✅ userId guardado: ${data["user"]["id"]}");
-        } else {
-          print("⚠️ No se encontró userId en la respuesta del backend");
         }
 
-        print("✅ Usuario guardado en SharedPreferences: ${jsonEncode(data)}");
+        print("✅ Usuario guardado en SharedPreferences");
 
         return {"success": true, "data": data};
       } else {
@@ -51,7 +46,7 @@ class AuthService {
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
-    print("🚪 Sesión cerrada y datos eliminados de SharedPreferences");
+    print("🚪 Sesión cerrada");
   }
 
   // 🔹 Verificar sesión
@@ -60,35 +55,115 @@ class AuthService {
     return prefs.containsKey("token");
   }
 
-  // 🔹 Obtener nombre de usuario
-  static Future<Map<String, String?>> getUserData() async {
-  final prefs = await SharedPreferences.getInstance();
-  if (!prefs.containsKey("usuarioData")) return {"nombre": null, "correo": null};
-
-  final data = jsonDecode(prefs.getString("usuarioData")!);
-  return {
-    "nombre": data["user"]["nombre"],
-    "correo": data["user"]["correo"], 
-  };
-}
-
   // 🔹 Obtener ID de usuario
   static Future<int?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
 
     if (prefs.containsKey("userId")) {
-      final id = prefs.getInt("userId");
-      print("✅ ID de usuario obtenido: $id");
-      return id;
+      return prefs.getInt("userId");
     }
 
     if (prefs.containsKey("usuarioData")) {
       final data = jsonDecode(prefs.getString("usuarioData")!);
-      print("📦 Datos completos del usuario desde SharedPreferences: $data");
       return data["user"]["id"];
     }
 
-    print("❌ No hay userId en SharedPreferences");
     return null;
   }
+
+  // 🆕 Obtener datos completos del usuario desde el backend
+  static Future<Map<String, dynamic>?> getUserDataFromBackend(int userId) async {
+    try {
+      print("👤 Obteniendo datos del usuario: $userId");
+      
+      final response = await http.get(
+        Uri.parse("$baseUrl/usuario/$userId"),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print("✅ Datos del usuario obtenidos: ${data['user']['primer_nombre']}");
+        return data['user'];
+      } else {
+        print("❌ Error obteniendo usuario: ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      print("❌ Error: $e");
+      return null;
+    }
+  }
+
+  // 🆕 Obtener datos del cliente para facturación
+  static Future<Map<String, dynamic>> getClienteDataForFactura() async {
+    try {
+      final userId = await getUserId();
+      if (userId == null) {
+        throw Exception("Usuario no identificado");
+      }
+
+      // Obtener datos completos del backend
+      final userData = await getUserDataFromBackend(userId);
+      
+      if (userData == null) {
+        throw Exception("No se pudieron obtener los datos del usuario");
+      }
+
+      // Preparar datos para la factura
+      final nombreCompleto = [
+        userData['primer_nombre'],
+        userData['segundo_nombre'],
+        userData['primer_apellido'],
+        userData['segundo_apellido'],
+      ].where((n) => n != null && n.toString().isNotEmpty).join(' ');
+
+      return {
+        'documento': userData['documento']?.toString() ?? '0000000000',
+        'nombre': nombreCompleto,
+        'direccion': userData['direccion'] ?? 'Sin dirección',
+        'email': userData['correo'] ?? 'cliente@email.com',
+        'telefono': userData['telefono1'] ?? '0000000000',
+      };
+    } catch (e) {
+      print("❌ Error preparando datos del cliente: $e");
+      
+      // Fallback con datos por defecto
+      return {
+        'documento': '0000000000',
+        'nombre': 'Cliente Innovatech',
+        'direccion': 'Sin dirección',
+        'email': 'cliente@email.com',
+        'telefono': '0000000000',
+      };
+    }
+  }
+  // Dentro de lib/services/auth_service.dart
+static Future<bool> updateUserData(Map<String, dynamic> data) async {
+  try {
+    final userId = await getUserId();
+    if (userId == null) return false;
+
+    final response = await http.put(
+      Uri.parse("$baseUrl/usuario/$userId"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 200) {
+      // Opcional: actualizar los datos guardados en el dispositivo
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("usuarioData", response.body);
+      return true;
+    } else {
+      print("❌ Error actualizando usuario: ${response.statusCode}");
+      return false;
+    }
+  } catch (e) {
+    print("❌ Error updateUserData: $e");
+    return false;
+  }
 }
+
+}
+

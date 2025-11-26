@@ -181,7 +181,7 @@ class ProductosCarrusel extends StatelessWidget {
                           child: ClipRRect(
                             borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                             child: Image.network(
-                              "https://rosybrown-ape-589569.hostingersite.com/uploads/${producto.imagen}",
+                              "https://innovatech-mvc-v-2-0.onrender.com/uploads/${producto.imagen}",
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) {
                                 return const Icon(Icons.broken_image, size: 80, color: Colors.grey);

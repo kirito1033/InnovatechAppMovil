@@ -305,7 +305,7 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Image.network(
-                                        "https://rosybrown-ape-589569.hostingersite.com/uploads/${producto.imagen}",
+                                        "https://innovatech-mvc-v-2-0.onrender.com/uploads/${producto.imagen}",
                                         width: 90,
                                         height: 90,
                                         fit: BoxFit.contain,

@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Permiso de Internet para WebView -->
+    <!-- Permisos de Internet y consulta de paquetes -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
 
     <application
         android:label="Innovatech"
@@ -48,11 +49,30 @@
 
     </application>
 
-    <!-- Permite consultar apps que procesan texto -->
+    <!-- 🆕 Queries para url_launcher -->
     <queries>
+        <!-- Permite consultar apps que procesan texto -->
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT" />
             <data android:mimeType="text/plain" />
+        </intent>
+        
+        <!-- Permite abrir URLs HTTP -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="http" />
+        </intent>
+        
+        <!-- Permite abrir URLs HTTPS -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        
+        <!-- Permite compartir archivos -->
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="*/*" />
         </intent>
     </queries>
 

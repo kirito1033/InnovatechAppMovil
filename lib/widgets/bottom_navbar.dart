@@ -5,7 +5,7 @@ import '../screens/busqueda_screen.dart';
 import '../screens/profile_screen.dart';
 
 class CustomBottomNavBar extends StatefulWidget {
-  final GlobalKey<ScaffoldState> scaffoldKey; // ✅ para abrir el drawer desde cualquier vista
+  final GlobalKey<ScaffoldState> scaffoldKey;
 
   const CustomBottomNavBar({super.key, required this.scaffoldKey});
 
@@ -20,21 +20,33 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _updateSelectedIndex();
+  }
+
+  /// Actualiza el índice seleccionado basado en la ruta actual
+  void _updateSelectedIndex() {
     final route = ModalRoute.of(context)?.settings.name;
 
     if (route?.contains('home') ?? false) {
-      _selectedIndex = 0;
+      setState(() => _selectedIndex = 0);
     } else if (route?.contains('carrito') ?? false) {
-      _selectedIndex = 1;
+      setState(() => _selectedIndex = 1);
     } else if (route?.contains('busqueda') ?? false) {
-      _selectedIndex = 2;
+      setState(() => _selectedIndex = 2);
     } else if (route?.contains('perfil') ?? false) {
-      _selectedIndex = 3;
+      setState(() => _selectedIndex = 3);
+    } else {
+      // 🆕 Si no es ninguna ruta del bottom nav, deseleccionar todo
+      setState(() => _selectedIndex = -1);
     }
   }
 
-  Future<void> _showPreloadAndNavigate(BuildContext context, Widget page,
-      {bool removeStack = false, required String routeName}) async {
+  Future<void> _showPreloadAndNavigate(
+    BuildContext context,
+    Widget page, {
+    bool removeStack = false,
+    required String routeName,
+  }) async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -58,7 +70,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
           (route) => false,
         );
       } else {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (_) => page,
@@ -70,7 +82,14 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   }
 
   void _onItemTapped(BuildContext context, int index) {
-    if (index == _selectedIndex) return;
+    // 🆕 Permitir presionar el mismo botón dos veces
+    // if (index == _selectedIndex) return;  ❌ REMOVIDO
+
+    // 🆕 Caso especial: Si presionas el botón "Más" (drawer)
+    if (index == 4) {
+      widget.scaffoldKey.currentState?.openEndDrawer();
+      return; // No cambiar selectedIndex
+    }
 
     setState(() {
       _selectedIndex = index;
@@ -78,12 +97,19 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
 
     switch (index) {
       case 0:
-        _showPreloadAndNavigate(context, const HomeScreen(),
-            removeStack: true, routeName: 'home');
+        _showPreloadAndNavigate(
+          context,
+          const HomeScreen(),
+          removeStack: true,
+          routeName: 'home',
+        );
         break;
       case 1:
-        _showPreloadAndNavigate(context, const CartScreen(),
-            routeName: 'carrito');
+        _showPreloadAndNavigate(
+          context,
+          const CartScreen(),
+          routeName: 'carrito',
+        );
         break;
       case 2:
         _showPreloadAndNavigate(
@@ -93,25 +119,24 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
         );
         break;
       case 3:
-        _showPreloadAndNavigate(context, const ProfileScreen(),
-            routeName: 'perfil');
-        break;
-      case 4:
-        widget.scaffoldKey.currentState?.openEndDrawer();
+        _showPreloadAndNavigate(
+          context,
+          const ProfileScreen(),
+          routeName: 'perfil',
+        );
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return AnimatedContainer(
       duration: animDuration,
       curve: Curves.easeInOut,
       child: BottomNavigationBar(
-        currentIndex: _selectedIndex,
+        currentIndex: _selectedIndex >= 0 && _selectedIndex < 5 ? _selectedIndex : 0,
         onTap: (index) => _onItemTapped(context, index),
+        type: BottomNavigationBarType.fixed, // 🆕 Evita animación rara cuando _selectedIndex = -1
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

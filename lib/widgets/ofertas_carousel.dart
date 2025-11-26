@@ -83,7 +83,7 @@ class _OfertasCarouselState extends State<OfertasCarousel> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
-                        "https://rosybrown-ape-589569.hostingersite.com/uploads/${oferta.imagen}",
+                        "https://innovatech-mvc-v-2-0.onrender.com/uploads/${oferta.imagen}",
                         fit: BoxFit.cover,
                         width: double.infinity,
                         errorBuilder: (context, error, stackTrace) =>

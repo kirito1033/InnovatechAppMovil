@@ -181,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     style: const TextStyle(color: Color(0xFF04EBEC)),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        _openUrl("https://rosybrown-ape-589569.hostingersite.com/condiciones");
+                                        _openUrl("https://innovatech-mvc-v-2-0.onrender.com/condiciones");
                                       },
                                   ),
                                   const TextSpan(text: "y el "),
@@ -190,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     style: const TextStyle(color: Color(0xFF04EBEC)),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        _openUrl("https://rosybrown-ape-589569.hostingersite.com/terminos");
+                                        _openUrl("https://innovatech-mvc-v-2-0.onrender.com/terminos");
                                       },
                                   ),
                                 ],
