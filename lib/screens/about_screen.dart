@@ -21,7 +21,6 @@ class _AboutScreenState extends State<AboutScreen> {
       key: _scaffoldKey,
       appBar: const CustomAppBar(),
 
-      // 🔹 Drawer con índice 5 (Acerca de)
       endDrawer: const CustomDrawer(currentIndex: 5),
 
       bottomNavigationBar: CustomBottomNavBar(scaffoldKey: _scaffoldKey),
