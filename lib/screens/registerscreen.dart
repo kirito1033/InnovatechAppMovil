@@ -6,14 +6,14 @@ import '../services/api_service.dart';
 import '../models/ciudad_model.dart';
 import '../models/tipo_documento_model.dart';
 
-// Custom TextField con validación y mensaje debajo personalizado
+
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hint;
   final bool isPassword;
   final bool isError;
   final bool isValid;
-  final String? errorMessage; // Añadido para el mensaje de error dinámico
+  final String? errorMessage; 
   final TextInputType keyboardType;
   final List<TextInputFormatter>? inputFormatters;
 
@@ -24,7 +24,7 @@ class CustomTextField extends StatelessWidget {
     this.isPassword = false,
     this.isError = false,
     this.isValid = false,
-    this.errorMessage, // Añadido al constructor
+    this.errorMessage, 
     this.keyboardType = TextInputType.text,
     this.inputFormatters,
   });
