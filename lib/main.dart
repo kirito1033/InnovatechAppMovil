@@ -39,24 +39,22 @@ class _MyAppState extends State<MyApp> {
   Future<void> _initDeepLinks() async {
     _appLinks = AppLinks();
 
-    // ✅ Verificamos si hay un enlace al iniciar
     final Uri? initialLink = await _appLinks.getInitialAppLink();
     if (initialLink != null) {
       _handleDeepLink(initialLink);
     }
 
-    // ✅ Escuchamos enlaces mientras la app está abierta
     _appLinks.uriLinkStream.listen((uri) {
       _handleDeepLink(uri);
     });
   }
 
   void _handleDeepLink(Uri uri) {
-    debugPrint("📩 Deep link recibido: $uri");
+    debugPrint("Deep link recibido: $uri");
 
     if (uri.host == 'restablecer-password') {
       final token = uri.pathSegments.isNotEmpty ? uri.pathSegments.last : '';
-      debugPrint("🔑 Token recibido: $token");
+      debugPrint("Token recibido: $token");
 
       if (token.isNotEmpty) {
         navigatorKey.currentState?.push(
@@ -65,10 +63,10 @@ class _MyAppState extends State<MyApp> {
           ),
         );
       } else {
-        debugPrint("⚠️ No se encontró token en el enlace");
+        debugPrint("No se encontró token en el enlace");
       }
     } else {
-      debugPrint("❌ Host no reconocido: ${uri.host}");
+      debugPrint("Host no reconocido: ${uri.host}");
     }
   }
 
