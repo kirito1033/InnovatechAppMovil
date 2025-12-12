@@ -42,9 +42,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       setState(() {
         usuarioId = id;
       });
-      print("✅ Usuario ID cargado dinámicamente: $usuarioId");
+      print("Usuario ID cargado dinámicamente: $usuarioId");
     } else {
-      print("❌ No se encontró usuario, redirigiendo al login...");
+      print("No se encontró usuario, redirigiendo al login...");
   
     }
   }
@@ -54,7 +54,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           backgroundColor: Colors.red,
-          content: Text("⚠️ Debes iniciar sesión para agregar al carrito"),
+          content: Text("Debes iniciar sesión para agregar al carrito"),
         ),
       );
       return;
@@ -75,7 +75,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         SnackBar(
           backgroundColor: Colors.green.shade700,
           content: const Text(
-            "✅ Producto agregado al carrito",
+            "Producto agregado al carrito",
             style: TextStyle(color: Colors.white),
           ),
         ),
@@ -88,11 +88,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         );
       }
     } else {
-      print("✅ Producto agregado al carrito: ${response.body}");
+      print("Producto agregado al carrito: ${response.body}");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: const Color.fromARGB(255, 114, 215, 86),
-          content: const Text("✅ Producto agregado al carrito"),
+          content: const Text("Producto agregado al carrito"),
         ),
       );
     }
@@ -112,7 +112,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       appBar: const CustomAppBar(),
       bottomNavigationBar: CustomBottomNavBar(scaffoldKey: _scaffoldKey),
       body: usuarioId == null
-          ? const Center(child: CircularProgressIndicator()) // 👈 mientras carga el usuario
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Card(
@@ -140,7 +140,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                       const SizedBox(height: 8),
 
-                      /// 💵 Precio + cantidad
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -238,7 +237,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                       const SizedBox(height: 20),
 
-                      /// 🛒 BOTÓN AGREGAR AL CARRITO
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
