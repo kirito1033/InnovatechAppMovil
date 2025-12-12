@@ -16,7 +16,6 @@ class Purchase {
   });
 
   factory Purchase.fromJson(Map<String, dynamic> json) {
-    // Calcular total desde factura_json (igual que en PHP)
     double total = 0.0;
     
     try {
