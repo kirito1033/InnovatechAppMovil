@@ -14,14 +14,10 @@ class FactusService {
     required String referenceCode,
   }) async {
     try {
-      print("📄 Preparando factura para enviar al backend...");
-      print("🆔 Usuario: $usuarioId");
-      print("📝 Referencia: $referenceCode");
 
-      // Preparar datos de la factura
       final facturaData = {
         "numbering_range_id": 8,
-        "reference_code": referenceCode, // ✅ Usar el referenceCode de PayU directamente
+        "reference_code": referenceCode, 
         "usuario_id": usuarioId,
         "observation": "Compra desde app móvil Innovatech",
         "payment_form": "1",
@@ -55,11 +51,7 @@ class FactusService {
         "items": _prepararProductos(productos),
       };
 
-      print("📦 Productos a facturar: ${productos.length}");
-      print("💰 Total: \$${_calcularTotal(productos).toStringAsFixed(2)}");
-      print("🔗 URL: $baseUrl/facturas");
 
-      // Enviar al backend Node.js
       final response = await http.post(
         Uri.parse('$baseUrl/facturas'),
         headers: {
@@ -69,20 +61,17 @@ class FactusService {
         body: jsonEncode(facturaData),
       );
 
-      print("📡 Respuesta del backend: ${response.statusCode}");
+      print("Respuesta del backend: ${response.statusCode}");
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         final result = jsonDecode(response.body);
         
-        print("✅ Factura creada exitosamente");
-        print("📄 Datos: ${response.body}");
 
         // Extraer número de factura
         final invoiceNumber = result['data']?['invoice_number'] ?? 
                              result['data']?['number'] ??
                              'TEMP-${DateTime.now().millisecondsSinceEpoch}';
 
-        print("📄 Número de factura: $invoiceNumber");
 
         return {
           'success': true,
@@ -92,8 +81,6 @@ class FactusService {
         };
       } else {
         final errorBody = response.body;
-        print("❌ Error del backend: ${response.statusCode}");
-        print("📄 Body: $errorBody");
 
         try {
           final error = jsonDecode(errorBody);
@@ -111,7 +98,7 @@ class FactusService {
         }
       }
     } catch (e) {
-      print("❌ Error crítico: $e");
+      print("Error crítico: $e");
       return {
         'success': false,
         'message': 'Error al conectar con el servidor',
@@ -132,14 +119,14 @@ class FactusService {
         "code_reference": producto['productoId'].toString(),
         "name": producto['nombre'],
         "quantity": cantidad,
-        "discount_rate": 0, // ✅ Siempre número
+        "discount_rate": 0, 
         "price": precio,
         "tax_rate": "19.00",
         "unit_measure_id": 70,
         "standard_code_id": 1,
         "is_excluded": 0,
         "tribute_id": 1,
-        "withholding_taxes": [] // ✅ Array vacío
+        "withholding_taxes": [] 
       };
     }).toList();
   }
@@ -155,19 +142,19 @@ class FactusService {
     return total;
   }
 
-  /// Fecha de vencimiento (30 días después de hoy)
+
   static String _getFechaVencimiento() {
     final fecha = DateTime.now().add(const Duration(days: 30));
     return "${fecha.year}-${fecha.month.toString().padLeft(2, '0')}-${fecha.day.toString().padLeft(2, '0')}";
   }
 
-  /// Fecha de inicio del periodo de facturación
+
   static String _getFechaInicioFacturacion() {
     final fecha = DateTime.now();
     return "${fecha.year}-${fecha.month.toString().padLeft(2, '0')}-01";
   }
 
-  /// Fecha de fin del periodo de facturación
+
   static String _getFechaFinFacturacion() {
     final fecha = DateTime.now();
     final siguienteMes = DateTime(fecha.year, fecha.month + 1, 1);
@@ -175,33 +162,33 @@ class FactusService {
     return "${ultimoDia.year}-${ultimoDia.month.toString().padLeft(2, '0')}-${ultimoDia.day.toString().padLeft(2, '0')}";
   }
 
-  /// Consulta una factura por su número (a través del backend)
+
   static Future<Map<String, dynamic>> consultarFactura(String numeroFactura) async {
     try {
-      print('🔍 Consultando factura: $numeroFactura');
+      print('Consultando factura: $numeroFactura');
       
       final response = await http.get(
         Uri.parse('$baseUrl/facturas/$numeroFactura'),
         headers: {'Accept': 'application/json'},
       );
 
-      print('📡 Status: ${response.statusCode}');
+      print('Status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
-        print('✅ Factura encontrada');
+        print('Factura encontrada');
         return {
           'success': true,
           'data': jsonDecode(response.body)['data'],
         };
       } else {
-        print('❌ Factura no encontrada');
+        print('Factura no encontrada');
         return {
           'success': false,
           'message': 'Factura no encontrada',
         };
       }
     } catch (e) {
-      print('❌ Error: $e');
+      print('Error: $e');
       return {
         'success': false,
         'message': 'Error al consultar factura',
@@ -213,21 +200,20 @@ class FactusService {
   /// Descarga el PDF de una factura (a través del backend)
   static Future<List<int>?> descargarPDF(String numeroFactura) async {
     try {
-      print('📥 Descargando PDF: $numeroFactura');
       
       final response = await http.get(
         Uri.parse('$baseUrl/facturas/$numeroFactura/pdf'),
       );
 
       if (response.statusCode == 200) {
-        print('✅ PDF descargado (${response.bodyBytes.length} bytes)');
+        print('PDF descargado (${response.bodyBytes.length} bytes)');
         return response.bodyBytes;
       } else {
-        print('❌ Error: ${response.statusCode}');
+        print('Error: ${response.statusCode}');
         return null;
       }
     } catch (e) {
-      print('❌ Error: $e');
+      print('Error: $e');
       return null;
     }
   }
