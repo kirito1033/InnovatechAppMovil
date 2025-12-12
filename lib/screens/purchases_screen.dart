@@ -6,7 +6,7 @@ import '../widgets/custom_drawer.dart';
 import '../models/purchase_model.dart';
 import '../services/purchase_service.dart';
 import '../services/auth_service.dart';
-import 'invoice_viewer_screen.dart'; // 🆕 Nuevo import
+import 'invoice_viewer_screen.dart'; 
 
 class PurchasesScreen extends StatefulWidget {
   const PurchasesScreen({super.key});
@@ -42,7 +42,7 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text("⚠️ Sesión expirada. Inicia sesión nuevamente"),
+              content: Text("Sesión expirada. Inicia sesión nuevamente"),
               backgroundColor: Colors.orange,
             ),
           );
@@ -51,7 +51,7 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
         return;
       }
 
-      print("👤 Usuario logueado ID: $userId");
+      print("Usuario logueado ID: $userId");
 
       if (mounted) {
         setState(() {
@@ -59,7 +59,7 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
         });
       }
     } catch (e) {
-      print("❌ Error al cargar compras: $e");
+      print("Error al cargar compras: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Error al cargar compras: $e")),
@@ -74,11 +74,10 @@ class _PurchasesScreenState extends State<PurchasesScreen> {
     }
   }
 
-  /// 🆕 Abre el PDF de la factura dentro de la app
   void _openPDF(String numero, String referenceCode) {
     if (numero.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("❌ Número de factura no disponible")),
+        const SnackBar(content: Text("Número de factura no disponible")),
       );
       return;
     }
