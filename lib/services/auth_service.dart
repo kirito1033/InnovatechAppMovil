@@ -1,4 +1,3 @@
-// archivo: lib/services/auth_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,7 +6,6 @@ import '../services/base_url.dart';
 class AuthService {
   static const String baseUrl = BaseUrlService.baseUrl;
 
-  // 🔹 Login
   static Future<Map<String, dynamic>> login(String usuario, String password) async {
     try {
       final response = await http.post(
@@ -25,10 +23,10 @@ class AuthService {
 
         if (data["user"] != null && data["user"]["id"] != null) {
           await prefs.setInt("userId", data["user"]["id"]);
-          print("✅ userId guardado: ${data["user"]["id"]}");
+          print("userId guardado: ${data["user"]["id"]}");
         }
 
-        print("✅ Usuario guardado en SharedPreferences");
+        print("Usuario guardado en SharedPreferences");
 
         return {"success": true, "data": data};
       } else {
@@ -42,20 +40,18 @@ class AuthService {
     }
   }
 
-  // 🔹 Logout
+
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
-    print("🚪 Sesión cerrada");
+    print("Sesión cerrada");
   }
 
-  // 🔹 Verificar sesión
   static Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.containsKey("token");
   }
 
-  // 🔹 Obtener ID de usuario
   static Future<int?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -71,10 +67,9 @@ class AuthService {
     return null;
   }
 
-  // 🆕 Obtener datos completos del usuario desde el backend
   static Future<Map<String, dynamic>?> getUserDataFromBackend(int userId) async {
     try {
-      print("👤 Obteniendo datos del usuario: $userId");
+      print("Obteniendo datos del usuario: $userId");
       
       final response = await http.get(
         Uri.parse("$baseUrl/usuario/$userId"),
@@ -83,19 +78,18 @@ class AuthService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        print("✅ Datos del usuario obtenidos: ${data['user']['primer_nombre']}");
+        print("Datos del usuario obtenidos: ${data['user']['primer_nombre']}");
         return data['user'];
       } else {
-        print("❌ Error obteniendo usuario: ${response.statusCode}");
+        print("Error obteniendo usuario: ${response.statusCode}");
         return null;
       }
     } catch (e) {
-      print("❌ Error: $e");
+      print("Error: $e");
       return null;
     }
   }
 
-  // 🆕 Obtener datos del cliente para facturación
   static Future<Map<String, dynamic>> getClienteDataForFactura() async {
     try {
       final userId = await getUserId();
@@ -138,7 +132,6 @@ class AuthService {
       };
     }
   }
-  // Dentro de lib/services/auth_service.dart
 static Future<bool> updateUserData(Map<String, dynamic> data) async {
   try {
     final userId = await getUserId();
@@ -156,11 +149,11 @@ static Future<bool> updateUserData(Map<String, dynamic> data) async {
       await prefs.setString("usuarioData", response.body);
       return true;
     } else {
-      print("❌ Error actualizando usuario: ${response.statusCode}");
+      print("Error actualizando usuario: ${response.statusCode}");
       return false;
     }
   } catch (e) {
-    print("❌ Error updateUserData: $e");
+    print("Error updateUserData: $e");
     return false;
   }
 }
