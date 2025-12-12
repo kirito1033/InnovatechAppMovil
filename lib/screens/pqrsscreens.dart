@@ -79,13 +79,13 @@ class _PqrsScreenState extends State<PqrsScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("✅ PQRS creada con éxito")),
+          const SnackBar(content: Text("PQRS creada con éxito")),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("❌ Error creando PQRS: $e")),
+          SnackBar(content: Text("Error creando PQRS: $e")),
         );
       }
     }
@@ -244,8 +244,6 @@ class _PqrsScreenState extends State<PqrsScreen> {
               ),
 
               const SizedBox(height: 24),
-
-              // 🔹 Tabla PQRS
               if (isLoading)
                 const Center(child: CircularProgressIndicator())
               else if (userPqrs.isEmpty)
