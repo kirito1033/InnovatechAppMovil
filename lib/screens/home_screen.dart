@@ -18,7 +18,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final ApiService apiService = ApiService();
   
-  // 🆕 Future combinado para cargar todo en paralelo
   late Future<Map<String, dynamic>> _contentFuture;
 
   @override
@@ -27,13 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
     _contentFuture = _loadAllContent();
   }
 
-  /// 🆕 Carga ofertas y categorías en paralelo
   Future<Map<String, dynamic>> _loadAllContent() async {
     try {
-      // Ejecutar ambas peticiones al mismo tiempo
       final results = await Future.wait([
         apiService.fetchCategoriasConProductos(),
-        _loadOfertas(), // Función que simula la carga de ofertas
+        _loadOfertas(), 
       ]);
 
       return {
@@ -46,11 +43,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  /// Simula la carga de ofertas (ajusta según tu implementación)
+
   Future<bool> _loadOfertas() async {
-    // Si OfertasCarousel hace su propia petición,
-    // esta función puede simplemente esperar un poco
-    // para sincronizar tiempos
+
     await Future.delayed(const Duration(milliseconds: 100));
     return true;
   }
@@ -63,7 +58,6 @@ class _HomeScreenState extends State<HomeScreen> {
       body: FutureBuilder<Map<String, dynamic>>(
         future: _contentFuture,
         builder: (context, snapshot) {
-          // 🔹 Estado de carga
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: Column(
@@ -80,7 +74,6 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
 
-          // 🔹 Estado de error
           if (snapshot.hasError) {
             return Center(
               child: Column(
@@ -113,7 +106,6 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
 
-          // 🔹 Contenido cargado
           if (!snapshot.hasData) {
             return const Center(child: Text("No hay datos disponibles"));
           }
@@ -137,7 +129,6 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
 
-          // 🔹 Renderizar todo junto
           return RefreshIndicator(
             onRefresh: () async {
               setState(() {
@@ -147,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ListView.builder(
               itemCount: categorias.length + 1,
               itemBuilder: (context, index) {
-                // 🔹 Primer elemento: Carrusel de ofertas
+
                 if (index == 0) {
                   return const Column(
                     children: [
@@ -157,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
 
-                // 🔹 Resto de elementos: Categorías con productos
+      
                 final categoria = categorias[index - 1];
 
                 if (categoria.productos.isEmpty) {
