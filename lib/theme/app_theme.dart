@@ -8,10 +8,10 @@ class AppColors {
 
   // Textos oscuros/claro
   static const Color textPrimary = Colors.white;
-  static const Color textDark = Colors.black; // 👈 nuevo
+  static const Color textDark = Colors.black;
 
   // Tarjetas claras
-  static const Color cardLight = Colors.white; // 👈 nuevo
+  static const Color cardLight = Colors.white;
 
   static const Color buttonText = Colors.black;
 
@@ -36,21 +36,21 @@ class AppTheme {
       onError: Colors.white,
       background: AppColors.background,
       onBackground: AppColors.textPrimary,
-      surface: AppColors.cardLight, // 👈 tarjetas claras
-      onSurface: AppColors.textDark, // 👈 textos oscuros en tarjetas
+      surface: AppColors.cardLight, 
+      onSurface: AppColors.textDark,
     ),
     scaffoldBackgroundColor: AppColors.background,
 
-    cardColor: AppColors.cardLight, // 👈 importante para tarjetas claras
+    cardColor: AppColors.cardLight, 
 
     textTheme: const TextTheme(
       titleLarge: TextStyle(
         fontSize: 22,
         fontWeight: FontWeight.bold,
-        color: AppColors.textDark, // 👈 títulos en negro
+        color: AppColors.textDark, 
       ),
-      bodyMedium: TextStyle(fontSize: 14, color: AppColors.textDark), // 👈 negro
-      bodySmall: TextStyle(fontSize: 12, color: Colors.black54), // 👈 gris oscuro
+      bodyMedium: TextStyle(fontSize: 14, color: AppColors.textDark), 
+      bodySmall: TextStyle(fontSize: 12, color: Colors.black54), 
     ),
 
     elevatedButtonTheme: ElevatedButtonThemeData(
