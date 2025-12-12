@@ -35,18 +35,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("✅ Contraseña actualizada correctamente"),
+            content: Text("Contraseña actualizada correctamente"),
             backgroundColor: Colors.green,
           ),
         );
 
-        // 👇 Redirigir al login después del cambio exitoso
         Navigator.pushReplacementNamed(context, '/login');
       } else {
         final body = jsonDecode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(body["error"] ?? "❌ Error al actualizar contraseña"),
+            content: Text(body["error"] ?? "Error al actualizar contraseña"),
             backgroundColor: Colors.red,
           ),
         );
