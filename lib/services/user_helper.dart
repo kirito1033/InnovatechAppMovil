@@ -1,9 +1,7 @@
-// services/user_helper.dart
 import 'package:flutter/material.dart';
 import 'auth_service.dart';
 
 class UserHelper {
-  /// Obtiene datos del usuario desde SharedPreferences
   static Future<Map<String, String>> getUserData() async {
     try {
       final userId = await AuthService.getUserId();
@@ -38,7 +36,7 @@ class UserHelper {
         "correo": userData['correo'] ?? "correo@ejemplo.com",
       };
     } catch (e) {
-      print("❌ Error obteniendo datos del usuario: $e");
+      print("Error obteniendo datos del usuario: $e");
       return {
         "username": "Usuario",
         "correo": "correo@ejemplo.com",
