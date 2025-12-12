@@ -30,7 +30,7 @@ class Purchase {
         }
       }
     } catch (e) {
-      print("⚠️ Error al calcular total: $e");
+      print("Error al calcular total: $e");
     }
 
     return Purchase(
