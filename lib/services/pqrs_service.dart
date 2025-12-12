@@ -1,4 +1,3 @@
-// archivo: lib/services/pqrs_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../services/base_url.dart';
@@ -6,7 +5,6 @@ import '../services/base_url.dart';
 class PqrsService {
   static const String baseUrl = BaseUrlService.baseUrl;
 
-  // 🔹 Obtener PQRS de un usuario
   static Future<List<dynamic>> getUserPqrs(int userId) async {
     try {
       final response = await http.get(
@@ -16,7 +14,7 @@ class PqrsService {
 
       if (response.statusCode == 200) {
         final pqrs = jsonDecode(response.body);
-        print("✅ PQRS obtenidas para usuario $userId: $pqrs");
+        print("PQRS obtenidas para usuario $userId: $pqrs");
         return pqrs;
       } else {
         throw Exception("Error al obtener PQRS: ${response.body}");
