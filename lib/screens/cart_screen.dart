@@ -70,7 +70,7 @@ class _CartScreenState extends State<CartScreen> {
         _loadCart();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("🗑️ Producto eliminado del carrito"),
+            content: Text("Producto eliminado del carrito"),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 2),
           ),
@@ -79,7 +79,7 @@ class _CartScreenState extends State<CartScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("❌ Error al eliminar: $e")),
+          SnackBar(content: Text("Error al eliminar: $e")),
         );
       }
     }
@@ -98,7 +98,7 @@ class _CartScreenState extends State<CartScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("❌ Error al actualizar cantidad: $e")),
+          SnackBar(content: Text("Error al actualizar cantidad: $e")),
         );
       }
     }
@@ -130,15 +130,15 @@ class _CartScreenState extends State<CartScreen> {
 
   Future<void> _clearCart(int userId) async {
     try {
-      print("🔥 Vaciando carrito...");
+      print("Vaciando carrito...");
       await CartService.clearCart(userId);
-      print("✅ Carrito vaciado correctamente");
+      print("Carrito vaciado correctamente");
       
       if (mounted) {
         await _loadCart();
       }
     } catch (e) {
-      print("❌ Error al vaciar carrito: $e");
+      print("Error al vaciar carrito: $e");
       rethrow;
     }
   }
@@ -147,17 +147,17 @@ class _CartScreenState extends State<CartScreen> {
     if (!mounted) return;
     
     try {
-      print("🏠 Navegando al Home...");
+      print("Navegando al Home...");
       Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
     } catch (e) {
-      print("❌ Error al navegar: $e");
+      print("Error al navegar: $e");
       try {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const HomeScreen()),
           (route) => false,
         );
       } catch (e2) {
-        print("❌ Error alternativo: $e2");
+        print("Error alternativo: $e2");
         Navigator.of(context).popUntil((route) => route.isFirst);
       }
     }
@@ -210,14 +210,13 @@ class _CartScreenState extends State<CartScreen> {
     if (userId == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("❌ Usuario no identificado")),
+          const SnackBar(content: Text("Usuario no identificado")),
         );
       }
       return;
     }
 
     try {
-      // 1️⃣ Obtener datos del carrito
       final cartSnapshot = await _futureCart;
       if (cartSnapshot == null || cartSnapshot.productos.isEmpty) {
         throw Exception("El carrito está vacío");
@@ -230,18 +229,8 @@ class _CartScreenState extends State<CartScreen> {
         'cantidad': p.cantidad,
       }).toList();
 
-      // 2️⃣ Obtener datos reales del usuario desde el backend
-      print("👤 Obteniendo datos del cliente...");
       final datosCliente = await AuthService.getClienteDataForFactura();
-      
-      print("✅ Datos del cliente obtenidos:");
-      print("📝 Nombre: ${datosCliente['nombre']}");
-      print("📧 Email: ${datosCliente['email']}");
-      print("📄 Documento: ${datosCliente['documento']}");
-      print("📍 Dirección: ${datosCliente['direccion']}");
-      print("📞 Teléfono: ${datosCliente['telefono']}");
 
-      // 3️⃣ Preparar pago PayU (usando el email real del usuario)
       final response = await http.post(
         Uri.parse('$baseUrl/productos/carrito/preparar-pago'),
         headers: {'Content-Type': 'application/json'},
@@ -263,36 +252,24 @@ class _CartScreenState extends State<CartScreen> {
           ..setNavigationDelegate(
             NavigationDelegate(
               onPageFinished: (String url) async {
-                print("📄 Página cargada: $url");
                 
                 if (url.contains("respuesta-pago") && !_paymentProcessed) {
                   _paymentProcessed = true;
-                  
-                  print("✅ Respuesta de PayU detectada");
                   
                   final uri = Uri.parse(url);
                   final transactionState = uri.queryParameters['transactionState'];
                   final amount = uri.queryParameters['TX_VALUE'];
                   
-                  print("💳 Estado: $transactionState");
-                  print("💰 Monto: $amount");
-                  
-                  // Cerrar WebView
                   if (mounted) {
                     Navigator.of(context).pop();
                   }
                   
                   if (transactionState == '4') {
-                    // ✅ PAGO APROBADO
                     try {
                       if (mounted) {
                         _showProcessingScreen(context, "Generando factura electrónica...");
                       }
 
-                      // 4️⃣ ENVIAR FACTURA A FACTUS (con datos reales del usuario)
-                      print("📄 Enviando factura a Factus...");
-                      print("👤 Cliente: ${datosCliente['nombre']}");
-                      print("📧 Email: ${datosCliente['email']}");
                       
                       final resultadoFactus = await FactusService.enviarFactura(
                         usuarioId: userId,
@@ -306,16 +283,15 @@ class _CartScreenState extends State<CartScreen> {
 
                       if (resultadoFactus['success'] == true) {
                         final invoiceNumber = resultadoFactus['invoice_number'];
-                        print("✅ Factura Factus creada: $invoiceNumber");
-                        mensajeFinal = "✅ Pago aprobado\n📄 Factura: $invoiceNumber";
+                        print("Factura Factus creada: $invoiceNumber");
+                        mensajeFinal = "Pago aprobado\n Factura: $invoiceNumber";
                         colorMensaje = Colors.green;
                       } else {
-                        print("⚠️ Error en Factus: ${resultadoFactus['message']}");
-                        mensajeFinal = "✅ Pago aprobado\n⚠️ Factura pendiente";
+                        print("Error en Factus: ${resultadoFactus['message']}");
+                        mensajeFinal = "Pago aprobado\n Factura pendiente";
                         colorMensaje = Colors.orange;
                       }
 
-                      // 5️⃣ Vaciar carrito
                       await _clearCart(userId);
                       
                       if (mounted) {
@@ -336,14 +312,14 @@ class _CartScreenState extends State<CartScreen> {
                       }
                       
                     } catch (e) {
-                      print("❌ Error al procesar: $e");
+                      print("Error al procesar: $e");
                       
                       if (mounted) {
                         Navigator.of(context).pop(); // Cerrar procesamiento
                         
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text("⚠️ Pago aprobado\nError: ${e.toString()}"),
+                            content: Text("Pago aprobado\nError: ${e.toString()}"),
                             backgroundColor: Colors.orange,
                             duration: const Duration(seconds: 4),
                           ),
@@ -354,11 +330,10 @@ class _CartScreenState extends State<CartScreen> {
                       }
                     }
                   } else if (transactionState == '6') {
-                    // ❌ PAGO RECHAZADO
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text("❌ Pago rechazado por el banco"),
+                          content: Text("Pago rechazado por el banco"),
                           backgroundColor: Colors.red,
                           duration: Duration(seconds: 3),
                         ),
@@ -369,18 +344,17 @@ class _CartScreenState extends State<CartScreen> {
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text("⏳ Pago pendiente de confirmación"),
+                          content: Text("Pago pendiente de confirmación"),
                           backgroundColor: Colors.orange,
                           duration: Duration(seconds: 3),
                         ),
                       );
                     }
                   } else {
-                    // ❌ ERROR
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text("❌ Error en la transacción"),
+                          content: Text("Error en la transacción"),
                           backgroundColor: Colors.red,
                           duration: Duration(seconds: 3),
                         ),
@@ -390,7 +364,7 @@ class _CartScreenState extends State<CartScreen> {
                 }
               },
               onNavigationRequest: (request) {
-                print("🔗 Navegando a: ${request.url}");
+                print("Navegando a: ${request.url}");
                 return NavigationDecision.navigate;
               },
             ),
@@ -411,7 +385,7 @@ class _CartScreenState extends State<CartScreen> {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text("❌ Pago cancelado por el usuario"),
+                          content: Text("Pago cancelado por el usuario"),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -428,18 +402,18 @@ class _CartScreenState extends State<CartScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("❌ Error al preparar pago: ${response.body}"),
+              content: Text("Error al preparar pago: ${response.body}"),
               backgroundColor: Colors.red,
             ),
           );
         }
       }
     } catch (e) {
-      print("❌ Error crítico: $e");
+      print("Error crítico: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("❌ Error: ${e.toString()}"),
+            content: Text("Error: ${e.toString()}"),
             backgroundColor: Colors.red,
           ),
         );
