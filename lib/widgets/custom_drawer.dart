@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/user_helper.dart';
-import '/theme/app_theme.dart'; // tus colores
+import '/theme/app_theme.dart'; 
 
 class CustomDrawer extends StatefulWidget {
   final int currentIndex;
@@ -31,7 +31,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   }
 
   void _handleNavigation(int index) {
-    Navigator.pop(context); // cerrar drawer
+    Navigator.pop(context); 
     switch (index) {
       case 0:
         Navigator.pushReplacementNamed(context, '/home');
@@ -45,7 +45,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
       case 3:
         Navigator.pushReplacementNamed(context, '/notifications');
         break;
-      case 4:  // 🆕 NUEVO
+      case 4:  
         Navigator.pushReplacementNamed(context, '/purchases');
         break;
       case 5:
