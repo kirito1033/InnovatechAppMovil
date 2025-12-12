@@ -36,7 +36,6 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
     } else if (route?.contains('perfil') ?? false) {
       setState(() => _selectedIndex = 3);
     } else {
-      // 🆕 Si no es ninguna ruta del bottom nav, deseleccionar todo
       setState(() => _selectedIndex = -1);
     }
   }
@@ -82,13 +81,11 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   }
 
   void _onItemTapped(BuildContext context, int index) {
-    // 🆕 Permitir presionar el mismo botón dos veces
-    // if (index == _selectedIndex) return;  ❌ REMOVIDO
 
-    // 🆕 Caso especial: Si presionas el botón "Más" (drawer)
+
     if (index == 4) {
       widget.scaffoldKey.currentState?.openEndDrawer();
-      return; // No cambiar selectedIndex
+      return; 
     }
 
     setState(() {
@@ -136,7 +133,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
       child: BottomNavigationBar(
         currentIndex: _selectedIndex >= 0 && _selectedIndex < 5 ? _selectedIndex : 0,
         onTap: (index) => _onItemTapped(context, index),
-        type: BottomNavigationBarType.fixed, // 🆕 Evita animación rara cuando _selectedIndex = -1
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
