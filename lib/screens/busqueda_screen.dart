@@ -24,7 +24,6 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
   final ApiService apiService = ApiService();
   late Future<List<Producto>> productosFuture;
 
-  // 🔹 Filtros seleccionados
   String? selectedColor;
   String? selectedMarca;
   String? selectedCategoria;
@@ -35,7 +34,7 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
   double? precioMin;
   double? precioMax;
 
-  bool mostrarFiltros = false; // 👈 Nuevo: controla si los filtros están visibles
+  bool mostrarFiltros = false;
 
   static const Color appBarBackground = Color.fromARGB(255, 2, 15, 31);
 
@@ -113,7 +112,6 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
             padding: const EdgeInsets.all(12),
             child: Column(
               children: [
-                // 🔹 Botón para mostrar/ocultar filtros
                 Align(
                   alignment: Alignment.centerRight,
                   child: ElevatedButton.icon(
@@ -141,7 +139,6 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
 
                 const SizedBox(height: 10),
 
-                // 🔹 Filtros (visibles solo si mostrarFiltros = true)
                 if (mostrarFiltros)
                   Expanded(
                     flex: 0,
@@ -253,7 +250,6 @@ class _BusquedaScreenState extends State<BusquedaScreen> {
 
                 const SizedBox(height: 12),
 
-                // 🔹 Resultados
                 Expanded(
                   flex: 1,
                   child: productos.isEmpty
