@@ -29,7 +29,6 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
     super.initState();
     _initializeWebView();
     
-    // Timeout de seguridad - si después de 15 segundos sigue cargando, mostrar error
     Future.delayed(const Duration(seconds: 15), () {
       if (mounted && _isLoading) {
         setState(() {
@@ -41,20 +40,17 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
   }
 
   void _initializeWebView() {
-    // URL del PDF original
+
     final pdfUrl = 'https://innovatech-mvc-v-2-0.onrender.com/facturas/pdf/${widget.numero}';
     
-    // Usar Google Docs Viewer para mejor compatibilidad
     final viewerUrl = 'https://docs.google.com/viewer?url=${Uri.encodeComponent(pdfUrl)}&embedded=true';
-    
-    print("📄 Cargando factura: $viewerUrl");
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
-            print("🔄 Iniciando carga: $url");
+            print("Iniciando carga: $url");
             if (mounted) {
               setState(() {
                 _isLoading = true;
@@ -63,7 +59,7 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
             }
           },
           onPageFinished: (String url) {
-            print("✅ Página cargada: $url");
+            print("Página cargada: $url");
             if (mounted) {
               setState(() {
                 _isLoading = false;
@@ -71,7 +67,7 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
             }
           },
           onWebResourceError: (WebResourceError error) {
-            print("❌ Error al cargar: ${error.description}");
+            print("Error al cargar: ${error.description}");
             _loadAttempts++;
             
             if (mounted) {
@@ -84,7 +80,7 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
             }
           },
           onNavigationRequest: (NavigationRequest request) {
-            print("🔗 Navegación solicitada: ${request.url}");
+            print("Navegación solicitada: ${request.url}");
             return NavigationDecision.navigate;
           },
         ),
@@ -92,7 +88,6 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
       ..loadRequest(Uri.parse(viewerUrl));
   }
 
-  // Abrir en navegador externo
   Future<void> _openInBrowser() async {
     final url = Uri.parse('https://innovatech-mvc-v-2-0.onrender.com/facturas/pdf/${widget.numero}');
     
@@ -105,13 +100,12 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("❌ Error al abrir navegador: $e")),
+          SnackBar(content: Text("Error al abrir navegador: $e")),
         );
       }
     }
   }
 
-  // Descargar factura
   Future<void> _downloadInvoice() async {
     if (_isDownloading) return;
 
@@ -122,7 +116,6 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
     final url = Uri.parse('https://innovatech-mvc-v-2-0.onrender.com/facturas/pdf/${widget.numero}');
     
     try {
-      // Mostrar mensaje de inicio de descarga
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -146,17 +139,16 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
         );
       }
 
-      // Abrir el PDF con la opción de descarga
       if (await canLaunchUrl(url)) {
         await launchUrl(
           url,
-          mode: LaunchMode.externalApplication, // Abre en navegador/visor que permite descargar
+          mode: LaunchMode.externalApplication, 
         );
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text("✅ Abriendo PDF para descarga..."),
+              content: Text("Abriendo PDF para descarga..."),
               backgroundColor: Colors.green,
               duration: Duration(seconds: 2),
             ),
@@ -166,11 +158,11 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
         throw Exception('No se puede abrir la URL');
       }
     } catch (e) {
-      print("❌ Error al descargar: $e");
+      print("Error al descargar: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("❌ Error al descargar: $e"),
+            content: Text("Error al descargar: $e"),
             backgroundColor: Colors.red,
           ),
         );
@@ -208,7 +200,6 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          // Botón de descarga
           IconButton(
             icon: _isDownloading
                 ? const SizedBox(
@@ -223,7 +214,6 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
             tooltip: "Descargar factura",
             onPressed: _isDownloading ? null : _downloadInvoice,
           ),
-          // Botón de recargar
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: "Recargar",
@@ -235,7 +225,6 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
               _initializeWebView();
             },
           ),
-          // Botón de abrir en navegador
           IconButton(
             icon: const Icon(Icons.open_in_browser),
             tooltip: "Abrir en navegador",
@@ -245,11 +234,9 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
       ),
       body: Stack(
         children: [
-          // WebView
           if (!_hasError)
             WebViewWidget(controller: _controller),
 
-          // Error state
           if (_hasError)
             Center(
               child: Padding(
@@ -325,8 +312,6 @@ class _InvoiceViewerScreenState extends State<InvoiceViewerScreen> {
                 ),
               ),
             ),
-
-          // Loading indicator (SIN el botón de "¿Tarda mucho?")
           if (_isLoading && !_hasError)
             Container(
               color: Colors.white,
