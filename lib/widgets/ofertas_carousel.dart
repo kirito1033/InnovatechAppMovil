@@ -48,7 +48,6 @@ class _OfertasCarouselState extends State<OfertasCarousel> {
                 builder: (context) {
                   return GestureDetector(
                     onTap: () async {
-                      // 🔹 Mostrar loader mientras carga
                       showDialog(
                         context: context,
                         barrierDismissible: false,
